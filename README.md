@@ -1,5 +1,5 @@
-[![star](http://github-svg-buttons.herokuapp.com/star.svg?user=ddavison&repo=getting-started-with-selenium)](http://github.com/ddavison/getting-started-with-selenium)
-[![fork](http://github-svg-buttons.herokuapp.com/fork.svg?user=ddavison&repo=getting-started-with-selenium)](http://github.com/ddavison/getting-started-with-selenium/fork)
+[![star](http://github-svg-buttons.herokuapp.com/star.svg?user=ddavison&repo=getting-started-with-selenium-framework)](http://github.com/ddavison/getting-started-with-selenium-framework)
+[![fork](http://github-svg-buttons.herokuapp.com/fork.svg?user=ddavison&repo=getting-started-with-selenium-framework)](http://github.com/ddavison/getting-started-with-selenium-framework/fork)
 
 # Getting Started
 To get right up and started,  you can [download the project (zip)](https://github.com/ddavison/getting-started-with-selenium/archive/master.zip) or you can checkout the project from github. If you don't know how, [this should help](http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository).
