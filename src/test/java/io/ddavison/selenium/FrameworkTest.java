@@ -15,7 +15,8 @@ import org.junit.Test;
 public class FrameworkTest extends AutomationTest {
     @Test
     public void testClick() throws Exception {
-        click("#click")
+        log("Test started")
+        .click("#click")
         .validatePresent("#click.success"); // adds the .success class after click
     }
 
