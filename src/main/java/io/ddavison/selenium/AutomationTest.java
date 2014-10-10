@@ -9,22 +9,10 @@
 
 package io.ddavison.selenium;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Properties;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -35,7 +23,18 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
-import org.openqa.selenium.support.ui.*;
+import org.openqa.selenium.support.ui.Select;
+
+import java.io.File;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.junit.Assert.*;
 
 /**
  * the base test that includes all Selenium 2 functionality that you will need
@@ -44,6 +43,8 @@ import org.openqa.selenium.support.ui.*;
  *
  */
 public class AutomationTest {
+
+    public static final Logger log = LogManager.getLogger(AutomationTest.class);
 
     public WebDriver driver;
     
@@ -54,7 +55,6 @@ public class AutomationTest {
     
     public Actions actions;
     
-    public Map<String, By> props = new HashMap<String, By>();
     private Map<String, String> vars = new HashMap<String, String>();
     
     /**
@@ -77,17 +77,26 @@ public class AutomationTest {
         switch (configuration.browser()) {
             case CHROME:
                 capabilities = DesiredCapabilities.chrome();
-                if (isLocal) driver = new ChromeDriver(capabilities);
+                if (isLocal) try {
+                    driver = new ChromeDriver(capabilities);
+                } catch (Exception x) {
+                    logFatal("chromedriver not found. See https://github.com/ddavison/getting-started-with-selenium-framework/wiki/WebDriver-Executables for more information.");
+                    System.exit(1);
+                }
                 break;
             case FIREFOX:
                 capabilities = DesiredCapabilities.firefox();
                 if (isLocal) driver = new FirefoxDriver(capabilities);
                 break;
             case INTERNET_EXPLORER:
+                logFatal("iedriver not found. See https://github.com/ddavison/getting-started-with-selenium-framework/wiki/WebDriver-Executables for more information.");
+                System.exit(1);
                 capabilities = DesiredCapabilities.internetExplorer();
                 if (isLocal) driver = new InternetExplorerDriver(capabilities);
                 break;
             case SAFARI:
+                logFatal("safaridriver not found. See https://github.com/ddavison/getting-started-with-selenium-framework/wiki/WebDriver-Executables for more information.");
+                System.exit(1);
                 capabilities = DesiredCapabilities.safari();
                 if (isLocal) driver = new SafariDriver(capabilities);
                 break;
@@ -108,20 +117,6 @@ public class AutomationTest {
                 System.err.println("Couldn't connect to hub: " + configuration.hub());
                 return;
             }
-
-        // load the properties.
-        Properties properties = new Properties();
-        try {
-            properties.load(getClass().getResourceAsStream(getClass().getSimpleName().concat(".properties")));
-            
-            for (String key : properties.stringPropertyNames())
-                // css is arbitrary here.. USE IT! It rocks!
-                props.put(key, By.cssSelector(properties.getProperty(key)));
-        } 
-        catch (Exception x) {
-//            x.printStackTrace();
-            System.err.println("WARN: No css properties file for this test was found.  You can create one under /src/tests/resources/<package(s)>/" + getClass().getSimpleName().concat(".properties"));
-        }
         
         actions = new Actions(driver);
         driver.navigate().to(baseUrl);
@@ -130,13 +125,20 @@ public class AutomationTest {
     static {
         // Set the webdriver env vars.
         if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-            System.setProperty("webdriver.chrome.driver", findFile("chromedriver"));
-            // System.setProperty("webdriver.ie.driver", null); // mac doesn't have ie
-            // System.setProperty("webdriver.firefox.driver", ""); // if using firefox, uncomment this, and replace "" with findFile("firefoxDriver")
-        } else {
+            System.setProperty("webdriver.chrome.driver", findFile("chromedriver.mac"));
+            System.setProperty("webdriver.firefox.driver", "");
+        } else if (System.getProperty("os.name").toLowerCase().contains("nix") ||
+                   System.getProperty("os.name").toLowerCase().contains("nux") ||
+                   System.getProperty("os.name").toLowerCase().contains("aix")
+        ) {
+            System.setProperty("webdriver.chrome.driver", findFile("chromedriver.linux"));
+            System.setProperty("webdriver.firefox.driver", "");
+        } else if (System.getProperty("os.name").toLowerCase().contains("win")) {
             System.setProperty("webdriver.chrome.driver", findFile("chromedriver.exe"));
-            // System.setProperty("webdriver.ie.driver", findFile("iedriver.exe")); // if using IE, uncomment this.
-            // System.setProperty("webdriver.firefox.driver", ""); // if using firefox, uncomment this, and replace "" with findFile("firefoxDriver.exe")
+            System.setProperty("webdriver.ie.driver", findFile("iedriver.exe"));
+            System.setProperty("webdriver.firefox.driver", "");
+        } else {
+
         }
     }
 
@@ -146,7 +148,7 @@ public class AutomationTest {
             if (new File(path + filename).exists())
                 return path + filename;
         }
-        return null;
+        return "";
     }
     
     @After
@@ -887,12 +889,61 @@ public class AutomationTest {
     }
 
     /**
-     * Log something to 'out'
+     * Log something as information
      * @param object What to log.
      * @return <code>AutomationTest</code> (for fluency)
      */
     public AutomationTest log(Object object) {
-        System.out.println(object);
+        return logInfo(object);
+    }
+
+    /**
+     * Log something as information
+     * @param object What to log
+     * @return <code>AutomationTest</code> (for fluency)
+     */
+    public AutomationTest logInfo(Object object) {
+        log.info(object);
+        return this;
+    }
+
+    /**
+     * Log something as a warning
+     * @param object What to log
+     * @return <code>AutomationTest</code> (for fluency)
+     */
+    public AutomationTest logWarn(Object object) {
+        log.warn(object);
+        return this;
+    }
+
+    /**
+     * Log something as an error
+     * @param object What to log
+     * @return <code>AutomationTest</code> (for fluency)
+     */
+    public AutomationTest logError(Object object) {
+        log.error(object);
+        return this;
+    }
+
+    /**
+     * Log something as debug
+     * @param object What to log
+     * @return <code>AutomationTest</code> (for fluency)
+     */
+    public AutomationTest logDebug(Object object) {
+        log.debug(object);
+        return this;
+    }
+
+    /**
+     * Log something as fatal
+     * @param object What to log
+     * @return <code>AutomationTest</code> (for fluency)
+     */
+    public AutomationTest logFatal(Object object) {
+        log.fatal(object);
         return this;
     }
 }
