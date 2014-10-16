@@ -6,7 +6,7 @@
 
   <name>getting-started-with-selenium-framework</name>
   <url>http://github.com/ddavison/getting-started-with-selenium-framework</url>
-  <version>1.1</version>
+  <version>1.2</version>
   <description>A quick and easy start-up browser automation framework using Selenium</description>
 
   <parent>

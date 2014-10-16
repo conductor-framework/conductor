@@ -580,6 +580,20 @@ public class AutomationTest {
     }
 
     /**
+     * Switches to a frame based on the index it comes. (starting at <code>0</code>)
+     * @param index The index of the frame in which it appears
+     * @return <code>AutomationTest</code> (for fluency)
+     */
+    public AutomationTest switchToFrame(int index) {
+        try {
+            driver.switchTo().frame(index);
+        } catch (Exception x) {
+            fail("Couldn't switch to frame with an index of [" + index + "]");
+        }
+        return this;
+    }
+
+    /**
      * Switch back to the default content (the first window / frame that you were on before switching)
      * @return <code>AutomationTest</code> (for fluency)
      */
