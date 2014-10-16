@@ -2,22 +2,43 @@
 [![fork](http://github-svg-buttons.herokuapp.com/fork.svg?user=ddavison&repo=getting-started-with-selenium-framework)](http://github.com/ddavison/getting-started-with-selenium-framework/fork)
 
 # Getting Started
-To get right up and started,  you can [download the project (zip)](https://github.com/ddavison/getting-started-with-selenium/archive/master.zip) or you can checkout the project from github. If you don't know how, [this should help](http://git-scm.com/book/en/Git-Basics-Getting-a-Git-Repository).
+Using maven, include it as a dependency:
+```xml
+<dependency>
+  <groupId>io.ddavison</groupId>
+  <artifactId>getting-started-with-selenium-framework</artifactId>
+  <version>[1,)</version>
+</dependency>
+```
 
-**Prerequisites**
-- Maven (if using eclipse, install Maven Integration for Eclipse)
-- jUnit 4
-- Java
-- WebDriver (Chrome, Firefox, IE, etc)
+Create a Java Class, and extend it from `AutomationTest`
 
 ### Drivers
-Currently, not all drivers are not packaged with this project, but they may be in the future!
-- [Chromedriver](http://chromedriver.storage.googleapis.com/index.html) (now is packaged with the project)
-- Firefox driver IS actually packaged with the Selenium jar.
-- [IEDriver](https://code.google.com/p/selenium/downloads/list)
+Drivers should be put in the root of your project, and be named like this:
 
-Launch your IDE, and under ```src/tests/java``` you'll find a file under the ```functional``` package.  This is a very short a simple test. 
-If you do not have Chromedriver installed, just switch the browser to ```FIREFOX``` and right click the file and ```Run As -> jUnit Test```
+#### Mac
+chromedriver.mac
+
+#### Windows
+chromedriver.exe
+
+#### Linux
+chromedriver.linux
+
+So as an example, your project structure could be:
+```
+Project
+| src
+|   main
+|     java
+|       TestClass.java
+| pom.xml
+| chromedriver.mac
+| chromedriver.exe
+| chromedriver.linux
+```
+
+
 
 # Goals
 The primary goals of this project are to...
