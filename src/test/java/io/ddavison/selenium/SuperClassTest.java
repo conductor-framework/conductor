@@ -9,14 +9,9 @@
 
 package io.ddavison.selenium;
 
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-public @interface Config {
-    public String url();
-    public Browser browser() default Browser.FIREFOX;
-    public String hub() default "";
-}
+/**
+ * @author {ddavison}
+ * @since Nov 05, 2014
+ */
+@Config(url="http://google.com", browser=Browser.CHROME)
+public class SuperClassTest extends AutomationTest {}

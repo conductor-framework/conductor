@@ -9,14 +9,15 @@
 
 package io.ddavison.selenium;
 
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.junit.Test;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-public @interface Config {
-    public String url();
-    public Browser browser() default Browser.FIREFOX;
-    public String hub() default "";
+/**
+ * @author {ddavison}
+ * @since Nov 05, 2014
+ */
+public class InheritedFromSuperClass extends SuperClassTest {
+    @Test
+    public void testInheritsConfigProperly() {
+        setText("[name='q']", "test");
+    }
 }
