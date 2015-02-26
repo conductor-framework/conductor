@@ -7,7 +7,7 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.ddavison.selenium;
+package io.ddavison.conductor;
 
 import org.junit.Test;
 
@@ -15,8 +15,7 @@ import org.junit.Test;
 public class FrameworkTest extends AutomationTest {
     @Test
     public void testClick() throws Exception {
-        log("Test started")
-        .click("#click")
+        click("#click")
         .validatePresent("#click.success"); // adds the .success class after click
     }
 

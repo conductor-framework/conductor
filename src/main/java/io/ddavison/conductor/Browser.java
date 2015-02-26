@@ -7,16 +7,23 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.ddavison.selenium;
+package io.ddavison.conductor;
 
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-public @interface Config {
-    public String url();
-    public Browser browser() default Browser.FIREFOX;
-    public String hub() default "";
+/**
+ * An enumeration of Browsers that Selenium 2 uses.
+ * @author ddavison
+ *
+ */
+public enum Browser {
+    CHROME("chrome"),
+    FIREFOX("firefox"),
+    INTERNET_EXPLORER("ie"),
+    SAFARI("safari"), 
+    HTMLUNIT("htmlunit");
+    
+    String moniker;
+    
+    Browser(String moniker) {
+        this.moniker = moniker;
+    }
 }

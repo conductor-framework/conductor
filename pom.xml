@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.ddavison</groupId>
-  <artifactId>getting-started-with-selenium-framework</artifactId>
+  <artifactId>conductor</artifactId>
   <packaging>jar</packaging>
 
-  <name>getting-started-with-selenium-framework</name>
-  <url>http://github.com/ddavison/getting-started-with-selenium-framework</url>
+  <name>conductor</name>
+  <url>http://github.com/ddavison/conductor</url>
   <version>1.3</version>
   <description>A quick and easy start-up browser automation framework using Selenium</description>
 
@@ -102,7 +102,7 @@
   </build>
 
   <scm>
-    <url>http://github.com/ddavison/getting-started-with-selenium-framework</url>
+    <url>http://github.com/ddavison/conductor</url>
   </scm>
 
   <properties>
