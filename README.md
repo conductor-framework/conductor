@@ -1,3 +1,7 @@
+Conductor
+===
+[See the site](http://conductor.ddavison.io)
+
 [![star](http://github-svg-buttons.herokuapp.com/star.svg?user=ddavison&repo=conductor)](http://github.com/ddavison/conductor)
 [![fork](http://github-svg-buttons.herokuapp.com/fork.svg?user=ddavison&repo=conductor)](http://github.com/ddavison/conductor/fork)
 
@@ -11,7 +15,7 @@ Using maven, include it as a dependency:
 </dependency>
 ```
 
-Create a Java Class, and extend it from `io.ddavison.conductor.AutomationTest`
+Create a Java Class, and extend it from `io.ddavison.conductor.Locomotive`
 
 ### Drivers
 Drivers should be put in the root of your project, and be named like this:
