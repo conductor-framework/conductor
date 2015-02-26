@@ -266,7 +266,7 @@ public class Locomotive {
     /**
      * Checks if the element is present or not.<br>
      * @param css The css selector for the element
-     * @return <i>this method is not meant to be used fluently.</i><br><br.
+     * @return <i>this method is not meant to be used fluently.</i><br><br>.
      * Returns <code>true</code> if the element is present. and <code>false</code> if it's not.
      */
     public boolean isPresent(String css) {
@@ -276,7 +276,7 @@ public class Locomotive {
     /**
      * Checks if the element is present or not.<br>
      * @param by The element
-     * @return <i>this method is not meant to be used fluently.</i><br><br.
+     * @return <i>this method is not meant to be used fluently.</i><br><br>.
      * Returns <code>true</code> if the element is present. and <code>false</code> if it's not.
      */
     public boolean isPresent(By by) {
@@ -841,7 +841,7 @@ public class Locomotive {
     
     /**
      * Navigates the browser back one page.
-     * Same as <code>driver.navigate().back()</navigate>
+     * Same as <code>driver.navigate().back()</code>
      * @return <code>AutomationTest</code> (for fluency)
      */
     public Locomotive goBack() {
@@ -880,7 +880,7 @@ public class Locomotive {
     }
 
     /**
-     * Get a variable from the data warehouse.<br /></br>
+     * Get a variable from the data warehouse.<br><br>
      * If the key is not set, then use {@link #get(String, String)}
      * @param key The key to fetch.
      * @return <code>AutomationTest</code> (for fluency)
