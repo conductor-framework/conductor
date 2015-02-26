@@ -14,4 +14,4 @@ package io.ddavison.conductor;
  * @since Nov 05, 2014
  */
 @Config(url="http://google.com", browser=Browser.CHROME)
-public class SuperClassTest extends AutomationTest {}
+public class SuperClassTest extends Locomotive {}

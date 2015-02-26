@@ -42,21 +42,21 @@ import static org.junit.Assert.*;
  * @author ddavison
  *
  */
-public class AutomationTest {
+public class Locomotive {
 
-    public static final Logger log = LogManager.getLogger(AutomationTest.class);
+    public static final Logger log = LogManager.getLogger(Locomotive.class);
 
     public WebDriver driver;
-    
+
     // max seconds before failing a script.
     private final int MAX_ATTEMPTS = 5;
-    
+
     private int attempts = 0;
-    
+
     public Actions actions;
-    
+
     private Map<String, String> vars = new HashMap<String, String>();
-    
+
     /**
      * The url that an automated test will be testing.
      */
@@ -64,12 +64,12 @@ public class AutomationTest {
 
     private Pattern p;
     private Matcher m;
-    
-    public AutomationTest() {
+
+    public Locomotive() {
         Config configuration = getClass().getAnnotation(Config.class);
 
         Capabilities capabilities;
-        
+
         baseUrl = configuration.url();
 
         boolean isLocal = StringUtils.isEmpty(configuration.hub());
@@ -187,7 +187,7 @@ public class AutomationTest {
      * @param css The css element to click.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest click(String css) {
+    public Locomotive click(String css) {
         return click(By.cssSelector(css));
     }
 
@@ -196,7 +196,7 @@ public class AutomationTest {
      * @param by The element to click.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest click(By by) {
+    public Locomotive click(By by) {
         waitForElement(by).click();
         return this;
     }
@@ -207,7 +207,7 @@ public class AutomationTest {
      * @param text The text that the element will have.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest setText(String css, String text) {
+    public Locomotive setText(String css, String text) {
         return setText(By.cssSelector(css), text);
     }
 
@@ -217,7 +217,7 @@ public class AutomationTest {
      * @param text The text that the element will have.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest setText(By by, String text) {
+    public Locomotive setText(By by, String text) {
         WebElement element = waitForElement(by);
         element.clear();
         element.sendKeys(text);
@@ -229,7 +229,7 @@ public class AutomationTest {
      * @param css The css element to hover over.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest hoverOver(String css) {
+    public Locomotive hoverOver(String css) {
         return hoverOver(By.cssSelector(css));
     }
 
@@ -238,7 +238,7 @@ public class AutomationTest {
      * @param by The element to hover over.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest hoverOver(By by) {
+    public Locomotive hoverOver(By by) {
         actions.moveToElement(driver.findElement(by)).perform();
         return this;
     }
@@ -336,7 +336,7 @@ public class AutomationTest {
      * @param css The css element to check
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest check(String css) {
+    public Locomotive check(String css) {
         return check(By.cssSelector(css));
     }
 
@@ -345,7 +345,7 @@ public class AutomationTest {
      * @param by The element to check
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest check(By by) {
+    public Locomotive check(By by) {
         if (!isChecked(by)) {
             waitForElement(by).click();
             assertTrue(by.toString() + " did not check!", isChecked(by));
@@ -358,7 +358,7 @@ public class AutomationTest {
      * @param css The css element to uncheck
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest uncheck(String css) {
+    public Locomotive uncheck(String css) {
         return uncheck(By.cssSelector(css));
     }
 
@@ -367,7 +367,7 @@ public class AutomationTest {
      * @param by The element to uncheck.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest uncheck(By by) {
+    public Locomotive uncheck(By by) {
         if (isChecked(by)) {
             waitForElement(by).click();
             assertFalse(by.toString() + " did not uncheck!", isChecked(by));
@@ -382,7 +382,7 @@ public class AutomationTest {
      * @see #selectOptionByValue(By, String)
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest selectOptionByText(String css, String text) {
+    public Locomotive selectOptionByText(String css, String text) {
         return selectOptionByText(By.cssSelector(css), text);
     }
 
@@ -393,7 +393,7 @@ public class AutomationTest {
      * @see #selectOptionByValue(By, String)
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest selectOptionByText(By by, String text) {
+    public Locomotive selectOptionByText(By by, String text) {
         Select box = new Select(waitForElement(by));
         box.selectByVisibleText(text);
         return this;
@@ -406,7 +406,7 @@ public class AutomationTest {
      * @see #selectOptionByText(By, String)
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest selectOptionByValue(String css, String value) {
+    public Locomotive selectOptionByValue(String css, String value) {
         return selectOptionByValue(By.cssSelector(css), value);
     }
 
@@ -417,7 +417,7 @@ public class AutomationTest {
      * @see #selectOptionByText(By, String)
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest selectOptionByValue(By by, String value) {
+    public Locomotive selectOptionByValue(By by, String value) {
         Select box = new Select(waitForElement(by));
         box.selectByValue(value);
         return this;
@@ -430,7 +430,7 @@ public class AutomationTest {
      * @param regex Regex enabled. Url of the window, or title.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest waitForWindow(String regex) {
+    public Locomotive waitForWindow(String regex) {
         Set<String> windows = driver.getWindowHandles();
 
         for (String window : windows) {
@@ -483,7 +483,7 @@ public class AutomationTest {
      * @param regex Regex enabled. Url of the window, or title.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest switchToWindow(String regex) {
+    public Locomotive switchToWindow(String regex) {
         Set<String> windows = driver.getWindowHandles();
         
         for (String window : windows) {
@@ -515,7 +515,7 @@ public class AutomationTest {
      * @param regex The title of the window to close (regex enabled). You may specify <code>null</code> to close the active window. If you specify <code>null</code> then the context will switch back to the initial window.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest closeWindow(String regex) {
+    public Locomotive closeWindow(String regex) {
     	if (regex == null) {
     		driver.close();
     		
@@ -561,7 +561,7 @@ public class AutomationTest {
      * Closes the current active window.  Calling this method will return the context back to the initial window.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest closeWindow() {
+    public Locomotive closeWindow() {
         return closeWindow(null);
     }
     
@@ -570,7 +570,7 @@ public class AutomationTest {
      * @param idOrName The id or name of the frame.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest switchToFrame(String idOrName) {
+    public Locomotive switchToFrame(String idOrName) {
         try {
             driver.switchTo().frame(idOrName);
         } catch (Exception x) {
@@ -584,7 +584,7 @@ public class AutomationTest {
      * @param index The index of the frame in which it appears
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest switchToFrame(int index) {
+    public Locomotive switchToFrame(int index) {
         try {
             driver.switchTo().frame(index);
         } catch (Exception x) {
@@ -597,7 +597,7 @@ public class AutomationTest {
      * Switch back to the default content (the first window / frame that you were on before switching)
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest switchToDefaultContent() {
+    public Locomotive switchToDefaultContent() {
         driver.switchTo().defaultContent();
         return this;
     }
@@ -611,7 +611,7 @@ public class AutomationTest {
      * @param css The css selector of the element
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validatePresent(String css) {
+    public Locomotive validatePresent(String css) {
         return validatePresent(By.cssSelector(css));
     }
 
@@ -620,7 +620,7 @@ public class AutomationTest {
      * @param by The css selector of the element
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validatePresent(By by) {
+    public Locomotive validatePresent(By by) {
         waitForElement(by);
         assertTrue("Element " + by.toString() + " does not exist!",
                 isPresent(by));
@@ -632,7 +632,7 @@ public class AutomationTest {
      * @param css The css selector for the element
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateNotPresent(String css) {
+    public Locomotive validateNotPresent(String css) {
         return validateNotPresent(By.cssSelector(css));
     }
 
@@ -641,7 +641,7 @@ public class AutomationTest {
      * @param by The css selector of the element
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateNotPresent(By by) {
+    public Locomotive validateNotPresent(By by) {
         assertFalse("Element " + by.toString() + " exists!", isPresent(by));
         return this;
     }
@@ -652,7 +652,7 @@ public class AutomationTest {
      * @param text The text to validate.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateText(String css, String text) {
+    public Locomotive validateText(String css, String text) {
         return validateText(By.cssSelector(css), text);
     }
 
@@ -662,7 +662,7 @@ public class AutomationTest {
      * @param text The text to validate.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateText(By by, String text) {
+    public Locomotive validateText(By by, String text) {
         String actual = getText(by);
         
         assertTrue(String.format("Text does not match! [expected: %s] [actual: %s]", text, actual), text.equals(actual));
@@ -675,7 +675,7 @@ public class AutomationTest {
      * @param text The text to validate.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateTextNot(String css, String text) {
+    public Locomotive validateTextNot(String css, String text) {
         return validateTextNot(By.cssSelector(css), text);
     }
 
@@ -685,7 +685,7 @@ public class AutomationTest {
      * @param text The text to validate.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateTextNot(By by, String text) {
+    public Locomotive validateTextNot(By by, String text) {
         String actual = getText(by);
 
         assertFalse(String.format("Text matches! [expected: %s] [actual: %s]", text, actual), text.equals(actual));
@@ -697,7 +697,7 @@ public class AutomationTest {
      * @param text The text to ensure is on the page.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateTextPresent(String text) {
+    public Locomotive validateTextPresent(String text) {
         assertTrue(driver.getPageSource().contains(text));
         return this;
     }
@@ -707,7 +707,7 @@ public class AutomationTest {
      * @param text The text to ensure is not on the page.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateTextNotPresent(String text) {
+    public Locomotive validateTextNotPresent(String text) {
         assertFalse(driver.getPageSource().contains(text));
         return this;
     }
@@ -717,7 +717,7 @@ public class AutomationTest {
      * @param css The css selector for the element
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateChecked(String css) {
+    public Locomotive validateChecked(String css) {
         return validateChecked(By.cssSelector(css));
     }
 
@@ -726,7 +726,7 @@ public class AutomationTest {
      * @param by The css selector of the element
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateChecked(By by) {
+    public Locomotive validateChecked(By by) {
         assertTrue(by.toString() + " is not checked!", isChecked(by));
         return this;
     }
@@ -736,7 +736,7 @@ public class AutomationTest {
      * @param css The css selector for the element
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateUnchecked(String css) {
+    public Locomotive validateUnchecked(String css) {
         return validateUnchecked(By.cssSelector(css));
     }
 
@@ -745,7 +745,7 @@ public class AutomationTest {
      * @param by The element
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateUnchecked(By by) {
+    public Locomotive validateUnchecked(By by) {
         assertFalse(by.toString() + " is not unchecked!", isChecked(by));
         return this;
     }
@@ -763,7 +763,7 @@ public class AutomationTest {
      * @param regex What the attribute <b>should</b> be.  (this method supports regex)
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateAttribute(String css, String attr, String regex) {
+    public Locomotive validateAttribute(String css, String attr, String regex) {
         return validateAttribute(By.cssSelector(css), attr, regex);
     }
 
@@ -780,7 +780,7 @@ public class AutomationTest {
      * @param regex What the attribute <b>should</b> be.  (this method supports regex)
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateAttribute(By by, String attr, String regex) {
+    public Locomotive validateAttribute(By by, String attr, String regex) {
         String actual = null;
         try {
             actual = driver.findElement(by).getAttribute(attr);
@@ -809,7 +809,7 @@ public class AutomationTest {
      * @param regex Regular expression to match
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateUrl(String regex) {
+    public Locomotive validateUrl(String regex) {
         p = Pattern.compile(regex);
         m = p.matcher(driver.getCurrentUrl());
         
@@ -822,7 +822,7 @@ public class AutomationTest {
      * @param condition The condition that is expected to be true
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateTrue(boolean condition) {
+    public Locomotive validateTrue(boolean condition) {
         assertTrue(condition);
         return this;
     }
@@ -832,7 +832,7 @@ public class AutomationTest {
      * @param condition The condition that is expected to be false
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest validateFalse(boolean condition) {
+    public Locomotive validateFalse(boolean condition) {
         assertFalse(condition);
         return this;
     }
@@ -844,7 +844,7 @@ public class AutomationTest {
      * Same as <code>driver.navigate().back()</navigate>
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest goBack() {
+    public Locomotive goBack() {
         driver.navigate().back();
         return this;
     }
@@ -859,7 +859,7 @@ public class AutomationTest {
      * </blockquote>
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest navigateTo(String url) {
+    public Locomotive navigateTo(String url) {
         // absolute url
         if (url.contains("://"))      driver.navigate().to(url);
         else if (url.startsWith("/")) driver.navigate().to(baseUrl.concat(url));
@@ -874,7 +874,7 @@ public class AutomationTest {
      * @param value The value to put.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest store(String key, String value) {
+    public Locomotive store(String key, String value) {
         vars.put(key, value);
         return this;
     }
@@ -907,7 +907,7 @@ public class AutomationTest {
      * @param object What to log.
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest log(Object object) {
+    public Locomotive log(Object object) {
         return logInfo(object);
     }
 
@@ -916,7 +916,7 @@ public class AutomationTest {
      * @param object What to log
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest logInfo(Object object) {
+    public Locomotive logInfo(Object object) {
         log.info(object);
         return this;
     }
@@ -926,7 +926,7 @@ public class AutomationTest {
      * @param object What to log
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest logWarn(Object object) {
+    public Locomotive logWarn(Object object) {
         log.warn(object);
         return this;
     }
@@ -936,7 +936,7 @@ public class AutomationTest {
      * @param object What to log
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest logError(Object object) {
+    public Locomotive logError(Object object) {
         log.error(object);
         return this;
     }
@@ -946,7 +946,7 @@ public class AutomationTest {
      * @param object What to log
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest logDebug(Object object) {
+    public Locomotive logDebug(Object object) {
         log.debug(object);
         return this;
     }
@@ -956,7 +956,7 @@ public class AutomationTest {
      * @param object What to log
      * @return <code>AutomationTest</code> (for fluency)
      */
-    public AutomationTest logFatal(Object object) {
+    public Locomotive logFatal(Object object) {
         log.fatal(object);
         return this;
     }

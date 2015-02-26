@@ -12,7 +12,7 @@ package io.ddavison.conductor;
 import org.junit.Test;
 
 @Config(browser = Browser.CHROME, url="http://ddavison.io/tests/getting-started-with-selenium.htm")
-public class FrameworkTest extends AutomationTest {
+public class FrameworkTest extends Locomotive {
     @Test
     public void testClick() throws Exception {
         click("#click")
