@@ -253,6 +253,7 @@ public class Locomotive {
 		return setText(By.cssSelector(css), text);
 	}
 
+
 	/**
 	 * Clears the text from a text field, and sets it.
 	 *
@@ -824,6 +825,26 @@ public class Locomotive {
 				"Text does not match! [expected: %s] [actual: %s]", text,
 				actual), text.equals(actual));
 		return this;
+	}
+
+	/**
+	 * Set and validate the text in a single step
+	 * @param by	The element to set and validate the text of.
+	 * @param text	The text to set and validate.
+	 * @return	<code>AutomationTest</code> (for fluency)
+	 */
+	public Locomotive setAndValidateText(By by, String text) {
+		return setText(by, text).validateText(by, text);
+	}
+
+	/**
+	 * Set and validate the text in a single step
+	 * @param css	The css element to set and validate the text of.
+	 * @param text	The text to set and validate.
+	 * @return	<code>AutomationTest</code> (for fluency)
+	 */
+	public Locomotive setAndValidateText(String css, String text) {
+		return setText(css, text).validateText(css, text);
 	}
 
 	/**

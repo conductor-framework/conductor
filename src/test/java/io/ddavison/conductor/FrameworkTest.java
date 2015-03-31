@@ -26,6 +26,11 @@ public class FrameworkTest extends Locomotive {
     }
 
     @Test
+    public void testSetAndValidateText() throws Exception {
+        setAndValidateText("#setTextField", "set and validate text test");
+    }
+
+    @Test
     public void testCheckUncheck() throws Exception {
         check("#checkbox")
         .validateChecked("#checkbox")
