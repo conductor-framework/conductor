@@ -27,7 +27,8 @@ public class FrameworkTest extends Locomotive {
 
     @Test
     public void testSetAndValidateText() throws Exception {
-        setAndValidateText("#setTextField", "set and validate text test");
+        setAndValidateText("#setTextField", "set and validate text test")
+        .validateText("#setTextField", "set and validate text test");
     }
 
     @Test
