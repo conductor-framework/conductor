@@ -42,6 +42,7 @@ Project
 | chromedriver.linux
 ```
 
+Currently, six browsers are supported and they are Firefox, HTMLUnit, Chrome, Internet Explorer, Safari, and PhantomJS
 
 
 # Goals

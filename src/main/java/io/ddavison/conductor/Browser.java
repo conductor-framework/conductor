@@ -19,8 +19,9 @@ public enum Browser {
     CHROME("chrome"),
     FIREFOX("firefox"),
     INTERNET_EXPLORER("ie"),
-    SAFARI("safari"), 
-    HTMLUNIT("htmlunit");
+    SAFARI("safari"),
+    HTMLUNIT("htmlunit"),
+    PHANTOMJS("phantomjs");
     
     String moniker;
     

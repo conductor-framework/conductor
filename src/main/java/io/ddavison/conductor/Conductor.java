@@ -275,6 +275,15 @@ public interface Conductor<Test> {
      */
     Test validateFalse(boolean condition);
 
+    /**
+     * Set and validate the text in a single step
+     * @param css/by The element to set and validate the text of.
+     * @param text The text to set and validate
+     * @return The implementing class for fluency
+     */
+    Test setAndValidateText(String css, String text);
+    Test setAndValidateText(By by, String text);
+
     /*
         End Validations
      */

@@ -20,6 +20,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
@@ -129,7 +130,7 @@ public class Locomotive implements Conductor<Locomotive> {
                 if (isLocal) try {
                     driver = new ChromeDriver(capabilities);
                 } catch (Exception x) {
-                    logFatal("chromedriver not found. See https://github.com/ddavison/getting-started-with-selenium-framework/wiki/WebDriver-Executables for more information.");
+                    logFatal("chromedriver not found. See https://github.com/ddavison/conductor/wiki/WebDriver-Executables for more information.");
                     System.exit(1);
                 }
                 break;
@@ -138,13 +139,13 @@ public class Locomotive implements Conductor<Locomotive> {
                 if (isLocal) driver = new FirefoxDriver(capabilities);
                 break;
             case INTERNET_EXPLORER:
-                logFatal("iedriver not found. See https://github.com/ddavison/getting-started-with-selenium-framework/wiki/WebDriver-Executables for more information.");
+                logFatal("iedriver not found. See https://github.com/ddavison/conductor/wiki/WebDriver-Executables for more information.");
                 System.exit(1);
                 capabilities = DesiredCapabilities.internetExplorer();
                 if (isLocal) driver = new InternetExplorerDriver(capabilities);
                 break;
             case SAFARI:
-                logFatal("safaridriver not found. See https://github.com/ddavison/getting-started-with-selenium-framework/wiki/WebDriver-Executables for more information.");
+                logFatal("safaridriver not found. See https://github.com/ddavison/conductor/wiki/WebDriver-Executables for more information.");
                 System.exit(1);
                 capabilities = DesiredCapabilities.safari();
                 if (isLocal) driver = new SafariDriver(capabilities);
@@ -152,6 +153,16 @@ public class Locomotive implements Conductor<Locomotive> {
             case HTMLUNIT: // If you are designing a regression system, HtmlUnit is NOT recommended.
                 capabilities = DesiredCapabilities.htmlUnitWithJs();
                 if (isLocal) driver = new HtmlUnitDriver(capabilities);
+                break;
+            case PHANTOMJS:
+                capabilities = DesiredCapabilities.phantomjs();
+                if (isLocal)
+                    try {
+                        driver = new PhantomJSDriver(capabilities);
+                    } catch (Exception x) {
+                        logFatal("phantomjs not found. Download them from https://bitbucket.org/ariya/phantomjs/downloads/ and extract the binary as phantomjs.exe, phantomjs.linux, or phantomjs.mac at project root for Windows, Linux, or MacOS.");
+                        System.exit(1);
+                    }
                 break;
             default:
                 System.err.println("Unknown browser: " + configuration.browser());
@@ -357,8 +368,8 @@ public class Locomotive implements Conductor<Locomotive> {
                 m = p.matcher(driver.getCurrentUrl());
 
                 if (m.find()) {
-                	attempts = 0;
-                	return switchToWindow(regex);
+                    attempts = 0;
+                    return switchToWindow(regex);
                 }
                 else {
                     // try for title
@@ -418,15 +429,15 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive closeWindow(String regex) {
-    	if (regex == null) {
-    		driver.close();
-    		
-    		if (driver.getWindowHandles().size() == 1)
-    			driver.switchTo().window(driver.getWindowHandles().iterator().next());
-    		
-    		return this;
-    	}
-    	
+        if (regex == null) {
+            driver.close();
+            
+            if (driver.getWindowHandles().size() == 1)
+                driver.switchTo().window(driver.getWindowHandles().iterator().next());
+            
+            return this;
+        }
+        
         Set<String> windows = driver.getWindowHandles();
         
         for (String window : windows) {
@@ -519,6 +530,14 @@ public class Locomotive implements Conductor<Locomotive> {
         
         assertTrue(String.format("Text does not match! [expected: %s] [actual: %s]", text, actual), text.equals(actual));
         return this;
+    }
+
+    public Locomotive setAndValidateText(By by, String text) {
+        return setText(by, text).validateText(by, text);
+    }
+
+    public Locomotive setAndValidateText(String css, String text) {
+        return setText(css, text).validateText(css, text);
     }
 
     public Locomotive validateTextNot(String css, String text) {
