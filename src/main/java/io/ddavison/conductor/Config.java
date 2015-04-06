@@ -16,7 +16,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Config {
-    public String url();
-    public Browser browser() default Browser.FIREFOX;
+    public String url() default "";
+    public Browser browser() default Browser.NONE;
     public String hub() default "";
 }

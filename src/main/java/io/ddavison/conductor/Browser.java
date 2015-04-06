@@ -15,6 +15,7 @@ package io.ddavison.conductor;
  *
  */
 public enum Browser {
+    NONE("none"),
     CHROME("chrome"),
     FIREFOX("firefox"),
     INTERNET_EXPLORER("ie"),
