@@ -39,7 +39,7 @@ public class ConfigTest {
         assertTrue(testWithoutConfig.configuration.browser().moniker,
                    testWithoutConfig.configuration.browser().moniker.equalsIgnoreCase(browser));
 
-        assertTrue(testWithoutConfig.configuration.url(),
+        assertTrue(testWithoutConfig.configuration.hub(),
                    testWithoutConfig.configuration.hub().equals(hub));
 
     }
@@ -62,13 +62,16 @@ public class ConfigTest {
         assertFalse(testWithConfig.configuration.browser().moniker,
         testWithConfig.configuration.browser().moniker.equalsIgnoreCase(jvmBrowser));
 
-        assertFalse(testWithConfig.configuration.url(),
+        assertFalse(testWithConfig.configuration.hub(),
                    testWithConfig.configuration.hub().equals(jvmHub));
 
     }
 
     @Test
     public void testDefaultProperties() {
+        System.clearProperty("default.url");
+        System.clearProperty("default.hub");
+        System.clearProperty("default.browser");
         Properties props = new Properties();
         try {props.load(getClass().getResourceAsStream("/default.properties"));}
         catch(Exception x) {
@@ -84,7 +87,7 @@ public class ConfigTest {
         assertTrue(testWithoutConfig.configuration.browser().moniker,
                    testWithoutConfig.configuration.browser().moniker.equalsIgnoreCase(props.getProperty("browser")));
 
-        assertTrue(testWithoutConfig.configuration.url(),
+        assertTrue(String.format("%s should be %s", testWithoutConfig.configuration.hub(),props.getProperty("hub")),
                    testWithoutConfig.configuration.hub().equals(props.getProperty("hub")));
 
         testWithoutConfig.teardown();
