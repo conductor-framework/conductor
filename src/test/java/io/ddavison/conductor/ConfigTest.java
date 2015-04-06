@@ -41,6 +41,7 @@ public class ConfigTest {
 
         assertTrue(testWithoutConfig.configuration.url(),
                    testWithoutConfig.configuration.hub().equals(hub));
+
     }
 
     @Test
@@ -63,6 +64,7 @@ public class ConfigTest {
 
         assertFalse(testWithConfig.configuration.url(),
                    testWithConfig.configuration.hub().equals(jvmHub));
+
     }
 
     @Test
@@ -84,6 +86,8 @@ public class ConfigTest {
 
         assertTrue(testWithoutConfig.configuration.url(),
                    testWithoutConfig.configuration.hub().equals(props.getProperty("hub")));
+
+        testWithoutConfig.teardown();
     }
 }
 
