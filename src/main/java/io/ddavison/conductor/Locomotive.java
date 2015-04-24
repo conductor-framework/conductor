@@ -175,6 +175,7 @@ public class Locomotive implements Conductor<Locomotive> {
                 driver = new RemoteWebDriver(new URL(configuration.hub()), capabilities); // just override the driver.
             } catch (Exception x) {
                 logFatal("Couldn't connect to hub: " + configuration.hub());
+                x.printStackTrace();
                 return;
             }
         
