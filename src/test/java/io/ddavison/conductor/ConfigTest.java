@@ -24,6 +24,7 @@ import static org.junit.Assert.fail;
  */
 @Ignore
 public class ConfigTest {
+    @Ignore
     @Test
     public void testJVMOverrides() {
         String url = "http://ddavison.io";
@@ -46,6 +47,7 @@ public class ConfigTest {
 
     }
 
+    @Ignore
     @Test
     public void testTestOverrides() {
         String jvmUrl = "http://ddavison.io";
@@ -69,6 +71,7 @@ public class ConfigTest {
 
     }
 
+    @Ignore
     @Test
     public void testDefaultProperties() {
         System.clearProperty("default.url");
