@@ -107,7 +107,7 @@ public class Locomotive implements Conductor<Locomotive> {
 
             @Override
             public String hub() {
-                if (testConfiguration != null && testConfiguration.hub() != "") return testConfiguration.hub();
+                if (testConfiguration != null && !Objects.equals(testConfiguration.hub(), "")) return testConfiguration.hub();
                 if (!System.getProperty("default.hub", "").equals("")) return System.getProperty("default.hub");
                 return props.getProperty("hub");
             }
@@ -122,10 +122,10 @@ public class Locomotive implements Conductor<Locomotive> {
 
         baseUrl = configuration.url();
 
-        log.debug(String.format("=== Configuration ===\n" +
-        "URL: %s\n" +
-        "Browser: %s\n" +
-        "Hub: %s\n", configuration.url(), configuration.browser().moniker, configuration.hub()));
+        log.debug(String.format("\n=== Configuration ===\n" +
+        "\tURL:     %s\n" +
+        "\tBrowser: %s\n" +
+        "\tHub:     %s\n", configuration.url(), configuration.browser().moniker, configuration.hub()));
 
         boolean isLocal = StringUtils.isEmpty(configuration.hub());
 
