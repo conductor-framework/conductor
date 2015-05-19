@@ -24,7 +24,6 @@ import static org.junit.Assert.fail;
  */
 @Ignore
 public class ConfigTest {
-    @Ignore
     @Test
     public void testJVMOverrides() {
         String url = "http://ddavison.io";

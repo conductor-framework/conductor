@@ -92,24 +92,31 @@ public class Locomotive implements Conductor<Locomotive> {
         configuration = new Config() {
             @Override
             public String url() {
-                if (testConfiguration != null && !testConfiguration.url().equals("")) return testConfiguration.url();
-                if (!System.getProperty("default.url", "").equals("")) return System.getProperty("default.url");
-                return props.getProperty("url");
+                String url = "";
+                if (!System.getProperty("default.url", "").equals("")) url = System.getProperty("default.url");
+                if (!StringUtils.isEmpty(props.getProperty("url"))) url = props.getProperty("url");
+                if (testConfiguration != null && (!StringUtils.isEmpty(testConfiguration.url()))) url = testConfiguration.url();
+                return url;
             }
 
             @Override
             public Browser browser() {
+                Browser browser = Browser.NONE;
+                if (!StringUtils.isEmpty(System.getProperty("default.browser", "")))
+                    browser = Browser.valueOf(System.getProperty("default.browser").toUpperCase());
                 if (testConfiguration != null && testConfiguration.browser() != Browser.NONE) return testConfiguration.browser();
-                if (!System.getProperty("default.browser", "").equals(""))
-                    return Browser.valueOf(System.getProperty("default.browser").toUpperCase());
-                return Browser.valueOf(props.getProperty("browser").toUpperCase());
+                if (!StringUtils.isEmpty(props.getProperty("browser")))
+                    browser = Browser.valueOf(props.getProperty("browser").toUpperCase());
+                return browser;
             }
 
             @Override
             public String hub() {
-                if (testConfiguration != null && !Objects.equals(testConfiguration.hub(), "")) return testConfiguration.hub();
-                if (!System.getProperty("default.hub", "").equals("")) return System.getProperty("default.hub");
-                return props.getProperty("hub");
+                String hub = "";
+                if (!System.getProperty("default.hub", "").equals("")) hub = System.getProperty("default.hub");
+                if (!StringUtils.isEmpty(props.getProperty("hub"))) hub = props.getProperty("hub");
+                if (testConfiguration != null && (!StringUtils.isEmpty(testConfiguration.hub()))) hub = testConfiguration.hub();
+                return hub;
             }
 
             @Override
