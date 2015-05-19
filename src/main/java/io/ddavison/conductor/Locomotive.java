@@ -72,6 +72,7 @@ public class Locomotive implements Conductor<Locomotive> {
     private Matcher m;
 
     public Locomotive() {
+        log.debug(System.getenv("CONDUCTOR_HUB"));
         final Properties props = new Properties();
         try {
             props.load(getClass().getResourceAsStream("/default.properties"));
