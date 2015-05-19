@@ -106,6 +106,7 @@
   <properties>
     <selenium_version>2.43.1</selenium_version>
     <phantomjs_version>1.2.0</phantomjs_version>
+    <CONDUCTOR_HUB>${env.CONDUCTOR_HUB}</CONDUCTOR_HUB>
   </properties>
 
   <dependencies>

@@ -93,8 +93,7 @@ public class Locomotive implements Conductor<Locomotive> {
             @Override
             public String url() {
                 String url = "";
-                if (!StringUtils.isEmpty(System.getenv("CONDUCTOR_URL"))) url = System.getenv("CONDUCTOR_URL");
-                if (!StringUtils.isEmpty(System.getProperty("CONDUCTOR_URL"))) url = System.getProperty("CONDUCTOR_URL");
+                if (!StringUtils.isEmpty(getJvmProperty("CONDUCTOR_URL"))) url = getJvmProperty("CONDUCTOR_URL");
                 if (!StringUtils.isEmpty(props.getProperty("url"))) url = props.getProperty("url");
                 if (testConfiguration != null && (!StringUtils.isEmpty(testConfiguration.url()))) url = testConfiguration.url();
                 return url;
@@ -103,10 +102,8 @@ public class Locomotive implements Conductor<Locomotive> {
             @Override
             public Browser browser() {
                 Browser browser = Browser.NONE;
-                if (!StringUtils.isEmpty(System.getenv("CONDUCTOR_BROWSER")))
-                    browser = Browser.valueOf(System.getenv("CONDUCTOR_BROWSER").toUpperCase());
-                if (!StringUtils.isEmpty(System.getProperty("CONDUCTOR_BROWSER")))
-                    browser = Browser.valueOf(System.getProperty("CONDUCTOR_BROWSER").toUpperCase());
+                if (!StringUtils.isEmpty(getJvmProperty("CONDUCTOR_BROWSER")))
+                    browser = Browser.valueOf(getJvmProperty("CONDUCTOR_BROWSER").toUpperCase());
                 if (testConfiguration != null && testConfiguration.browser() != Browser.NONE) return testConfiguration.browser();
                 if (!StringUtils.isEmpty(props.getProperty("browser")))
                     browser = Browser.valueOf(props.getProperty("browser").toUpperCase());
@@ -116,8 +113,7 @@ public class Locomotive implements Conductor<Locomotive> {
             @Override
             public String hub() {
                 String hub = "";
-                if (!StringUtils.isEmpty(System.getenv("CONDUCTOR_HUB"))) hub = System.getenv("CONDUCTOR_HUB");
-                if (!StringUtils.isEmpty(System.getProperty("CONDUCTOR_HUB"))) hub = System.getProperty("CONDUCTOR_HUB");
+                if (!StringUtils.isEmpty(getJvmProperty("CONDUCTOR_HUB"))) hub = getJvmProperty("CONDUCTOR_HUB");
                 if (!StringUtils.isEmpty(props.getProperty("hub"))) hub = props.getProperty("hub");
                 if (testConfiguration != null && (!StringUtils.isEmpty(testConfiguration.hub()))) hub = testConfiguration.hub();
                 return hub;
@@ -199,18 +195,27 @@ public class Locomotive implements Conductor<Locomotive> {
         driver.navigate().to(baseUrl);
     }
 
+    /**
+     * Get a Jvm property / environment variable
+     * @param prop the property to get
+     * @return the property value
+     */
+    private static String getJvmProperty(String prop) {
+        return (System.getProperty(prop, System.getenv(prop)));
+    }
+
     static {
         // Set the webdriver env vars.
-        if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+        if (getJvmProperty("os.name").toLowerCase().contains("mac")) {
             System.setProperty("webdriver.chrome.driver", findFile("chromedriver.mac"));
             System.setProperty("webdriver.firefox.driver", "");
-        } else if (System.getProperty("os.name").toLowerCase().contains("nix") ||
-                   System.getProperty("os.name").toLowerCase().contains("nux") ||
-                   System.getProperty("os.name").toLowerCase().contains("aix")
+        } else if (getJvmProperty("os.name").toLowerCase().contains("nix") ||
+                   getJvmProperty("os.name").toLowerCase().contains("nux") ||
+                   getJvmProperty("os.name").toLowerCase().contains("aix")
         ) {
             System.setProperty("webdriver.chrome.driver", findFile("chromedriver.linux"));
             System.setProperty("webdriver.firefox.driver", "");
-        } else if (System.getProperty("os.name").toLowerCase().contains("win")) {
+        } else if (getJvmProperty("os.name").toLowerCase().contains("win")) {
             System.setProperty("webdriver.chrome.driver", findFile("chromedriver.exe"));
             System.setProperty("webdriver.ie.driver", findFile("iedriver.exe"));
             System.setProperty("webdriver.firefox.driver", "");
