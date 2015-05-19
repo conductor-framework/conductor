@@ -122,6 +122,11 @@ public class Locomotive implements Conductor<Locomotive> {
 
         baseUrl = configuration.url();
 
+        log.debug(String.format("=== Configuration ===\n" +
+        "URL: %s\n" +
+        "Browser: %s\n" +
+        "Hub: %s\n", configuration.url(), configuration.browser().moniker, configuration.hub()));
+
         boolean isLocal = StringUtils.isEmpty(configuration.hub());
 
         switch (configuration.browser()) {
