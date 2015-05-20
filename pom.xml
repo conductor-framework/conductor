@@ -85,7 +85,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.5</version>
+	<version>1.6</version>
         <executions>
           <execution>
             <id>sign-artifacts</id>
@@ -93,6 +93,10 @@
             <goals>
               <goal>sign</goal>
             </goals>
+	    <configuration>
+	      <keyname>ossrh</keyname>
+	      <passphraseServerId>ossrh</passphraseServerId>
+	    </configuration>
           </execution>
         </executions>
       </plugin>
@@ -100,12 +104,14 @@
   </build>
 
   <scm>
-    <url>http://github.com/ddavison/conductor</url>
+    <url>http://github.com/conductor-framework/conductor</url>
   </scm>
 
   <properties>
     <selenium_version>2.43.1</selenium_version>
     <phantomjs_version>1.2.0</phantomjs_version>
+    <CONDUCTOR_URL>${env.CONDUCTOR_URL}</CONDUCTOR_URL>
+    <CONDUCTOR_BROWSER>${env.CONDUCTOR_BROWSER}</CONDUCTOR_BROWSER>
     <CONDUCTOR_HUB>${env.CONDUCTOR_HUB}</CONDUCTOR_HUB>
   </properties>
 
