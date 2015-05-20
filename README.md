@@ -2,8 +2,8 @@ Conductor
 ===
 [See the site](http://conductor.ddavison.io)
 
-[![star](http://github-svg-buttons.herokuapp.com/star.svg?user=ddavison&repo=conductor)](http://github.com/ddavison/conductor)
-[![fork](http://github-svg-buttons.herokuapp.com/fork.svg?user=ddavison&repo=conductor)](http://github.com/ddavison/conductor/fork)
+[![star](http://githubbadges.com/star.svg?user=conductor-framework&repo=conductor)](http://github.com/conductor-framework/conductor)
+[![fork](http://githubbadges.com/fork.svg?user=conductor-framework&repo=conductor)](http://github.com/conductor-framework/conductor/fork)
 
 # Getting Started
 Using maven, include it as a dependency:
