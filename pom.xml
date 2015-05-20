@@ -94,8 +94,8 @@
               <goal>sign</goal>
             </goals>
             <configuration>
-              <keyname>ossrh</keyname>
-              <passphraseServerId>ossrh</passphraseServerId>
+              <keyname>${gpg.keyname}</keyname>
+              <passphraseServerId>${gpg.keyname}</passphraseServerId>
             </configuration>
           </execution>
         </executions>
