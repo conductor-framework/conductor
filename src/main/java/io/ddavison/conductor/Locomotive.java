@@ -77,7 +77,7 @@ public class Locomotive implements Conductor<Locomotive> {
             props.load(getClass().getResourceAsStream("/default.properties"));
         } catch (IOException e) {
             logFatal("Couldn't load in default properties");
-        }
+        } catch (Exception e) {}
 
         /**
          * Order of overrides:
@@ -190,7 +190,7 @@ public class Locomotive implements Conductor<Locomotive> {
                 x.printStackTrace();
                 return;
             }
-        
+
         actions = new Actions(driver);
         driver.navigate().to(baseUrl);
     }
@@ -232,19 +232,19 @@ public class Locomotive implements Conductor<Locomotive> {
         }
         return "";
     }
-    
+
     @After
     public void teardown() {
         driver.quit();
     }
-    
+
     /**
      * Private method that acts as an arbiter of implicit timeouts of sorts.. sort of like a Wait For Ajax method.
      */
     public WebElement waitForElement(By by) {
         int attempts = 0;
         int size = driver.findElements(by).size();
-        
+
         while (size == 0) {
             size = driver.findElements(by).size();
             if (attempts == MAX_ATTEMPTS) fail(String.format("Could not find %s after %d seconds",
@@ -258,9 +258,9 @@ public class Locomotive implements Conductor<Locomotive> {
                 x.printStackTrace();
             }
         }
-        
+
         if (size > 1) System.err.println("WARN: There are more than 1 " + by.toString() + " 's!");
-        
+
         return driver.findElement(by);
     }
 
@@ -316,12 +316,12 @@ public class Locomotive implements Conductor<Locomotive> {
     public String getText(By by) {
         String text;
         WebElement e = waitForElement(by);
-        
+
         if (e.getTagName().equalsIgnoreCase("input") || e.getTagName().equalsIgnoreCase("select"))
             text = e.getAttribute("value");
         else
             text = e.getText();
-        
+
         return text;
     }
 
@@ -376,7 +376,7 @@ public class Locomotive implements Conductor<Locomotive> {
         box.selectByValue(value);
         return this;
     }
-    
+
     /* Window / Frame Switching */
 
     public Locomotive waitForWindow(String regex) {
@@ -396,7 +396,7 @@ public class Locomotive implements Conductor<Locomotive> {
                 else {
                     // try for title
                     m = p.matcher(driver.getTitle());
-                    
+
                     if (m.find()) {
                         attempts = 0;
                         return switchToWindow(regex);
@@ -405,7 +405,7 @@ public class Locomotive implements Conductor<Locomotive> {
             } catch(NoSuchWindowException e) {
                 if (attempts <= MAX_ATTEMPTS) {
                     attempts++;
-                    
+
                     try {Thread.sleep(1000);}catch(Exception x) { x.printStackTrace(); }
 
                     return waitForWindow(regex);
@@ -429,23 +429,23 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Locomotive switchToWindow(String regex) {
         Set<String> windows = driver.getWindowHandles();
-        
+
         for (String window : windows) {
             driver.switchTo().window(window);
             System.out.println(String.format("#switchToWindow() : title=%s ; url=%s",
                     driver.getTitle(),
                     driver.getCurrentUrl()));
-            
+
             p = Pattern.compile(regex);
             m = p.matcher(driver.getTitle());
-            
+
             if (m.find()) return this;
             else {
                 m = p.matcher(driver.getCurrentUrl());
                 if (m.find()) return this;
             }
         }
-        
+
         fail("Could not switch to window with title / url: " + regex);
         return this;
     }
@@ -453,26 +453,26 @@ public class Locomotive implements Conductor<Locomotive> {
     public Locomotive closeWindow(String regex) {
         if (regex == null) {
             driver.close();
-            
+
             if (driver.getWindowHandles().size() == 1)
                 driver.switchTo().window(driver.getWindowHandles().iterator().next());
-            
+
             return this;
         }
-        
+
         Set<String> windows = driver.getWindowHandles();
-        
+
         for (String window : windows) {
             try {
                 driver.switchTo().window(window);
-                
+
                 p = Pattern.compile(regex);
                 m = p.matcher(driver.getTitle());
-                
+
                 if (m.find()) {
                     switchToWindow(regex); // switch to the window, then close it.
                     driver.close();
-                    
+
                     if (windows.size() == 2) // just default back to the first window.
                         driver.switchTo().window(windows.iterator().next());
                 } else {
@@ -480,11 +480,11 @@ public class Locomotive implements Conductor<Locomotive> {
                     if (m.find()) {
                         switchToWindow(regex);
                         driver.close();
-                        
+
                         if (windows.size() == 2) driver.switchTo().window(windows.iterator().next());
                     }
                 }
-                    
+
             } catch(NoSuchWindowException e) {
                 fail("Cannot close a window that doesn't exist. ["+regex+"]");
             }
@@ -518,9 +518,9 @@ public class Locomotive implements Conductor<Locomotive> {
         driver.switchTo().defaultContent();
         return this;
     }
-    
+
     /* ************************ */
-    
+
     /* Validation Functions for Testing */
 
     public Locomotive validatePresent(String css) {
@@ -549,7 +549,7 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Locomotive validateText(By by, String text) {
         String actual = getText(by);
-        
+
         assertTrue(String.format("Text does not match! [expected: %s] [actual: %s]", text, actual), text.equals(actual));
         return this;
     }
@@ -615,24 +615,24 @@ public class Locomotive implements Conductor<Locomotive> {
         } catch (Exception x) {
             fail("Cannot validate an attribute if an element doesn't have it!");
         }
-        
+
         p = Pattern.compile(regex);
         m = p.matcher(actual);
-        
-        assertTrue(String.format("Attribute doesn't match! [Selector: %s] [Attribute: %s] [Desired value: %s] [Actual value: %s]", 
+
+        assertTrue(String.format("Attribute doesn't match! [Selector: %s] [Attribute: %s] [Desired value: %s] [Actual value: %s]",
                 by.toString(),
                 attr,
                 regex,
                 actual
                 ), m.find());
-        
+
         return this;
     }
 
     public Locomotive validateUrl(String regex) {
         p = Pattern.compile(regex);
         m = p.matcher(driver.getCurrentUrl());
-        
+
         assertTrue("Url does not match regex [" + regex + "] (actual is: \""+driver.getCurrentUrl()+"\")", m.find());
         return this;
     }
@@ -646,7 +646,7 @@ public class Locomotive implements Conductor<Locomotive> {
         assertFalse(condition);
         return this;
     }
-    
+
     /* ================================ */
 
     public Locomotive goBack() {
@@ -659,7 +659,7 @@ public class Locomotive implements Conductor<Locomotive> {
         if (url.contains("://"))      driver.navigate().to(url);
         else if (url.startsWith("/")) driver.navigate().to(baseUrl.concat(url));
         else                          driver.navigate().to(driver.getCurrentUrl().concat(url));
-        
+
         return this;
     }
 
