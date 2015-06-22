@@ -193,7 +193,7 @@ public class Locomotive implements Conductor<Locomotive> {
 
         actions = new Actions(driver);
 
-	if (StringUtils.isNotEmpty(baseUrl)) driver.navigate().to(baseUrl);
+        if (StringUtils.isNotEmpty(baseUrl)) driver.navigate().to(baseUrl);
     }
 
     /**
