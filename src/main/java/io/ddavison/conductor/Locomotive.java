@@ -209,17 +209,14 @@ public class Locomotive implements Conductor<Locomotive> {
         // Set the webdriver env vars.
         if (getJvmProperty("os.name").toLowerCase().contains("mac")) {
             System.setProperty("webdriver.chrome.driver", findFile("chromedriver.mac"));
-            System.setProperty("webdriver.firefox.driver", "");
         } else if (getJvmProperty("os.name").toLowerCase().contains("nix") ||
                    getJvmProperty("os.name").toLowerCase().contains("nux") ||
                    getJvmProperty("os.name").toLowerCase().contains("aix")
         ) {
             System.setProperty("webdriver.chrome.driver", findFile("chromedriver.linux"));
-            System.setProperty("webdriver.firefox.driver", "");
         } else if (getJvmProperty("os.name").toLowerCase().contains("win")) {
             System.setProperty("webdriver.chrome.driver", findFile("chromedriver.exe"));
             System.setProperty("webdriver.ie.driver", findFile("iedriver.exe"));
-            System.setProperty("webdriver.firefox.driver", "");
         } else {
 
         }
