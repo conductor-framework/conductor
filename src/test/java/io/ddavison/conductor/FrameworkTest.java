@@ -10,6 +10,8 @@
 package io.ddavison.conductor;
 
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @Config(browser = Browser.CHROME, url="http://ddavison.io/tests/getting-started-with-selenium.htm")
 public class FrameworkTest extends Locomotive {
@@ -65,8 +67,47 @@ public class FrameworkTest extends Locomotive {
     }
 
     @Test
+    public void testCanValidateAttributes() {
+        click("#click")
+        .validateAttribute("#click", "class", "success")
+        .validateAttribute("#click", "class", "succ.*");
+    }
+
+    @Test
     public void testVariables() throws Exception {
         store("initial_text", getText("#setTextField"))
         .validateTrue(get("initial_text").equals("some text")); // the text box defaults to the text "some text"
+    }
+
+    @Test
+    public void testWaitsWorkReg() {
+        waitForCondition(ExpectedConditions.titleIs("Getting Started with Selenium test site."))
+        .click("#addAnElement")
+        .waitForCondition(ExpectedConditions.not(ExpectedConditions.invisibilityOfElementLocated(By.id("addedElement"))));
+    }
+
+    @Test
+    public void testWaitsWorkDynamic() {
+        waitForCondition(ExpectedConditions.titleIs("Getting Started with Selenium test site."))
+        .click("#addAnElementWait")
+        .waitForCondition(ExpectedConditions.not(ExpectedConditions.invisibilityOfElementLocated(By.id("addedElementWait"))));
+    }
+
+    @Test
+    public void testWaitsUntilAvailableToInteract() {
+        click("#addAnElementWait")
+        .store("the-text", getText("#addedElementWait"))
+        .validateTrue(get("the-text").equals("added (wait)!"));
+    }
+
+    @Test
+    public void testTimeoutsWork() {
+        setTimeout(1)
+        .click("#addAnElementWait") // 3 second timer
+        .validateTrue(waitForElement(By.cssSelector("#addedElementWait")) == null)
+        .setTimeout(4)
+        .refresh()
+        .click("#addAnElementWait") // 3 second timer
+        .validateTrue(waitForElement(By.cssSelector("#addedElementWait")) != null);
     }
 }

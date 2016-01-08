@@ -11,6 +11,9 @@ package io.ddavison.conductor;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author ddavison
@@ -23,6 +26,48 @@ public interface Conductor<Test> {
     /*
         Actions
      */
+
+    /**
+     * Refresh the page
+     * @return The implementing class for fluency
+     */
+    Test refresh();
+
+    /**
+     * Go back a page
+     * @return The implementing class for fluency
+     */
+    Test back();
+
+    /**
+     * Go forward a page
+     * @return The implementing class for fluency
+     */
+    Test forward();
+
+    /**
+     * Set the explicit timeout
+     * @param seconds the number of seconds
+     * @return The implementing class for fluency
+     */
+    Test setTimeout(int seconds);
+
+    /**
+     * Set the implicit timeout
+     * @param time the time to implicitly wait
+     * @param unit the time unit
+     * @return The implementing class for fluency
+     */
+    Test implicitlyWait(long time, TimeUnit unit);
+
+    /**
+     * How long to wait for a page to load
+     * @param time the amount of time to wait
+     * @param unit the time unit
+     * @return The implementing class for fluency
+     */
+    Test pageLoadTimeout(long time, TimeUnit unit);
+
     /**
      * Click an element.
      * @param css/by The element to click.
@@ -181,6 +226,8 @@ public interface Conductor<Test> {
      */
     Test validatePresent(String css);
     Test validatePresent(By by);
+    Test validatePresent(String failureReason, String css);
+    Test validatePresent(String failureReason, By by);
 
     /**
      * Validates that an element is not present.
@@ -189,6 +236,8 @@ public interface Conductor<Test> {
      */
     Test validateNotPresent(String css);
     Test validateNotPresent(By by);
+    Test validateNotPresent(String failureReason, String css);
+    Test validateNotPresent(String failureReason, By by);
 
     /**
      * Validate that the text of an element is correct.
@@ -198,6 +247,8 @@ public interface Conductor<Test> {
      */
     Test validateText(String css, String text);
     Test validateText(By by, String text);
+    Test validateText(String failureReason, String css, String text);
+    Test validateText(String failureReason, By by, String text);
 
     /**
      * Validate that the text of an element is not matching text.
@@ -207,6 +258,8 @@ public interface Conductor<Test> {
      */
     Test validateTextNot(String css, String text);
     Test validateTextNot(By by, String text);
+    Test validateTextNot(String failureReason, String css, String text);
+    Test validateTextNot(String failureReason, By by, String text);
 
     /**
      * Validate that text is present somewhere on the page.
@@ -214,6 +267,7 @@ public interface Conductor<Test> {
      * @return The implementing class for fluency
      */
     Test validateTextPresent(String text);
+    Test validateTextPresent(String failureReason, String text);
 
     /**
      * Validate that some text is nowhere on the page.
@@ -221,6 +275,7 @@ public interface Conductor<Test> {
      * @return The implementing class for fluency
      */
     Test validateTextNotPresent(String text);
+    Test validateTextNotPresent(String failureReason, String text);
 
     /**
      * Validate that a checkbox or a radio button is checked.
@@ -229,6 +284,8 @@ public interface Conductor<Test> {
      */
     Test validateChecked(String css);
     Test validateChecked(By by);
+    Test validateChecked(String failureReason, String css);
+    Test validateChecked(String failureReason, By by);
 
     /**
      * Validate that a checkbox or a radio button is unchecked.
@@ -237,6 +294,8 @@ public interface Conductor<Test> {
      */
     Test validateUnchecked(String css);
     Test validateUnchecked(By by);
+    Test validateUnchecked(String failureReason, String css);
+    Test validateUnchecked(String failureReason, By by);
 
     /**
      * Validates an attribute of an element.<br><br>
@@ -253,6 +312,8 @@ public interface Conductor<Test> {
      */
     Test validateAttribute(String css, String attr, String regex);
     Test validateAttribute(By by, String attr, String regex);
+    Test validateAttribute(String failureReason, String css, String attr, String regex);
+    Test validateAttribute(String failureReason, By by, String attr, String regex);
 
     /**
      * Validate the Url
@@ -260,6 +321,7 @@ public interface Conductor<Test> {
      * @return The implementing class for fluency
      */
     Test validateUrl(String regex);
+    Test validateUrl(String failureReason, String regex);
 
     /**
      * Validates that a specific condition is true
@@ -267,6 +329,7 @@ public interface Conductor<Test> {
      * @return The implementing class for fluency
      */
     Test validateTrue(boolean condition);
+    Test validateTrue(String failureReason, boolean condition);
 
     /**
      * Validates that a specific condition is false
@@ -274,6 +337,7 @@ public interface Conductor<Test> {
      * @return The implementing class for fluency
      */
     Test validateFalse(boolean condition);
+    Test validateFalse(String failureReason, boolean condition);
 
     /**
      * Set and validate the text in a single step
@@ -381,4 +445,19 @@ public interface Conductor<Test> {
      * @return The implementing class for fluency
      */
     Test logFatal(Object object);
+
+    /**
+     * Wait for a particular condition to be met using defaults
+     * @param condition the condition to wait for
+     * @return The implementing class for fluency
+     */
+    Test waitForCondition(ExpectedCondition<Boolean> condition);
+
+    /**
+     * Wait for a particular condition to be met
+     * @param condition the condition to wait for
+     * @param timeoutInSeconds how long (in seconds) to wait
+     * @return The implementing class for fluency
+     */
+    Test waitForCondition(ExpectedCondition<Boolean> condition, int timeoutInSeconds);
 }

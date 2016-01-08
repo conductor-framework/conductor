@@ -108,11 +108,12 @@
   </scm>
 
   <properties>
-    <selenium_version>2.43.1</selenium_version>
+    <selenium_version>2.48.2</selenium_version>
     <phantomjs_version>1.2.0</phantomjs_version>
     <CONDUCTOR_URL>${env.CONDUCTOR_URL}</CONDUCTOR_URL>
     <CONDUCTOR_BROWSER>${env.CONDUCTOR_BROWSER}</CONDUCTOR_BROWSER>
     <CONDUCTOR_HUB>${env.CONDUCTOR_HUB}</CONDUCTOR_HUB>
+    <CONDUCTOR_TIMEOUT>${env.CONDUCTOR_TIMEOUT}</CONDUCTOR_TIMEOUT>
   </properties>
 
   <dependencies>

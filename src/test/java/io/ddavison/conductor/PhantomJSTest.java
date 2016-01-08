@@ -9,15 +9,16 @@
 
 package io.ddavison.conductor;
 
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.junit.Test;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-public @interface Config {
-    public String url() default "";
-    public Browser browser() default Browser.NONE;
-    public String hub() default "";
-    public int timeout() default Locomotive.DEFAULT_TIMEOUT;
+/**
+ * @author ddavison
+ * @since Nov 23, 2015
+ */
+@Config(browser = Browser.PHANTOMJS, url = "http://google.com")
+public class PhantomJSTest extends Locomotive {
+    @Test
+    public void testPhantomJSWorks() {
+        setText("[name='q']", "Test");
+    }
 }

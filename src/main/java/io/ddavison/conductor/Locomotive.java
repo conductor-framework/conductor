@@ -24,7 +24,7 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
-import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +32,7 @@ import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.*;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,11 +56,19 @@ public class Locomotive implements Conductor<Locomotive> {
     public WebDriver driver;
 
     // max seconds before failing a script.
-    private final int MAX_ATTEMPTS = 5;
+    public static final int DEFAULT_MAX_ATTEMPTS = 5;
+    public static       int MAX_ATTEMPTS         = DEFAULT_MAX_ATTEMPTS; // attempts to find an element
 
+    // max seconds a script should wait for something to appear
+    public static final int DEFAULT_TIMEOUT = 5;
+    public static       int TIMEOUT         = DEFAULT_TIMEOUT; // time (in seconds) before it fails a script
+
+    // attempts taken
     private int attempts = 0;
 
     public Actions actions;
+
+    public Wait wait;
 
     private Map<String, String> vars = new HashMap<String, String>();
 
@@ -77,7 +86,8 @@ public class Locomotive implements Conductor<Locomotive> {
             props.load(getClass().getResourceAsStream("/default.properties"));
         } catch (IOException e) {
             logFatal("Couldn't load in default properties");
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         /**
          * Order of overrides:
@@ -95,7 +105,8 @@ public class Locomotive implements Conductor<Locomotive> {
                 String url = "";
                 if (!StringUtils.isEmpty(getJvmProperty("CONDUCTOR_URL"))) url = getJvmProperty("CONDUCTOR_URL");
                 if (!StringUtils.isEmpty(props.getProperty("url"))) url = props.getProperty("url");
-                if (testConfiguration != null && (!StringUtils.isEmpty(testConfiguration.url()))) url = testConfiguration.url();
+                if (testConfiguration != null && (!StringUtils.isEmpty(testConfiguration.url())))
+                    url = testConfiguration.url();
                 return url;
             }
 
@@ -104,7 +115,8 @@ public class Locomotive implements Conductor<Locomotive> {
                 Browser browser = Browser.NONE;
                 if (!StringUtils.isEmpty(getJvmProperty("CONDUCTOR_BROWSER")))
                     browser = Browser.valueOf(getJvmProperty("CONDUCTOR_BROWSER").toUpperCase());
-                if (testConfiguration != null && testConfiguration.browser() != Browser.NONE) return testConfiguration.browser();
+                if (testConfiguration != null && testConfiguration.browser() != Browser.NONE)
+                    return testConfiguration.browser();
                 if (!StringUtils.isEmpty(props.getProperty("browser")))
                     browser = Browser.valueOf(props.getProperty("browser").toUpperCase());
                 return browser;
@@ -117,6 +129,16 @@ public class Locomotive implements Conductor<Locomotive> {
                 if (!StringUtils.isEmpty(props.getProperty("hub"))) hub = props.getProperty("hub");
                 if (testConfiguration != null && (!StringUtils.isEmpty(testConfiguration.hub()))) hub = testConfiguration.hub();
                 return hub;
+            }
+
+            @Override
+            public int timeout() {
+                int timeout = TIMEOUT;
+                if (StringUtils.isNotEmpty(getJvmProperty("CONDUCTOR_TIMEOUT"))) timeout = Integer.parseInt(getJvmProperty("CONDUCTOR_TIMEOUT"));
+                if (StringUtils.isNotEmpty(props.getProperty("timeout"))) timeout = Integer.parseInt(props.getProperty("timeout"));
+                if (testConfiguration != null) timeout = testConfiguration.timeout();
+                TIMEOUT = timeout;
+                return timeout;
             }
 
             @Override
@@ -236,18 +258,38 @@ public class Locomotive implements Conductor<Locomotive> {
         driver.quit();
     }
 
+    public Locomotive setTimeout(int seconds) {
+        TIMEOUT = seconds;
+        return this;
+    }
+
+    public Locomotive implicitlyWait(long time, TimeUnit unit) {
+        driver.manage().timeouts().implicitlyWait(time, unit);
+        return this;
+    }
+
+    public Locomotive pageLoadTimeout(long time, TimeUnit unit) {
+        driver.manage().timeouts().pageLoadTimeout(time, unit);
+        return this;
+    }
+
     /**
      * Private method that acts as an arbiter of implicit timeouts of sorts.. sort of like a Wait For Ajax method.
      */
     public WebElement waitForElement(By by) {
         int attempts = 0;
         int size = driver.findElements(by).size();
+        WebElement theElement;
 
         while (size == 0) {
             size = driver.findElements(by).size();
-            if (attempts == MAX_ATTEMPTS) fail(String.format("Could not find %s after %d seconds",
-                                                             by.toString(),
-                                                             MAX_ATTEMPTS));
+            if (attempts == TIMEOUT) {
+                logFatal(String.format("Could not find %s after %d seconds",
+                by.toString(),
+                TIMEOUT));
+                return null;
+            }
+
             attempts++;
             try {
                 Thread.sleep(1000); // sleep for 1 second.
@@ -259,7 +301,27 @@ public class Locomotive implements Conductor<Locomotive> {
 
         if (size > 1) System.err.println("WARN: There are more than 1 " + by.toString() + " 's!");
 
-        return driver.findElement(by);
+        theElement = driver.findElement(by);
+        // wait for said element to be interactable
+        wait = new WebDriverWait(driver, TIMEOUT);
+        wait.until(ExpectedConditions.elementToBeClickable(theElement));
+
+        return theElement;
+    }
+
+    public Locomotive refresh() {
+        driver.navigate().refresh();
+        return this;
+    }
+
+    public Locomotive back() {
+        driver.navigate().back();
+        return this;
+    }
+
+    public Locomotive forward() {
+        driver.navigate().forward();
+        return this;
     }
 
     public Locomotive click(String css) {
@@ -526,9 +588,17 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive validatePresent(By by) {
+        return validatePresent("Element " + by.toString() + " does not exist!", by);
+    }
+
+    public Locomotive validatePresent(String failureReason, String css) {
+        return validatePresent(failureReason, By.cssSelector(css));
+    }
+
+    public Locomotive validatePresent(String failureReason, By by) {
         waitForElement(by);
-        assertTrue("Element " + by.toString() + " does not exist!",
-                isPresent(by));
+        assertTrue(failureReason,
+            isPresent(by));
         return this;
     }
 
@@ -537,7 +607,15 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive validateNotPresent(By by) {
-        assertFalse("Element " + by.toString() + " exists!", isPresent(by));
+        return validateNotPresent("Element " + by.toString() + " exists!", by);
+    }
+
+    public Locomotive validateNotPresent(String failureReason, String css) {
+        return validateNotPresent(failureReason, By.cssSelector(css));
+    }
+
+    public Locomotive validateNotPresent(String failureReason, By by) {
+        assertFalse(failureReason, isPresent(by));
         return this;
     }
 
@@ -546,9 +624,17 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive validateText(By by, String text) {
+        return validateText("Text does not match! [expected: %s] [actual: %s]", by, text);
+    }
+
+    public Locomotive validateText(String failureReason, String css, String text) {
+        return validateText(failureReason, By.cssSelector(css), text);
+    }
+
+    public Locomotive validateText(String failureReason, By by, String text) {
         String actual = getText(by);
 
-        assertTrue(String.format("Text does not match! [expected: %s] [actual: %s]", text, actual), text.equals(actual));
+        assertTrue(String.format(failureReason, text, actual), text.equals(actual));
         return this;
     }
 
@@ -565,19 +651,35 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive validateTextNot(By by, String text) {
+        return validateTextNot("Text matches! [expected: %s] [actual: %s]", by, text);
+    }
+
+    public Locomotive validateTextNot(String failureReason, String css, String text) {
+        return validateTextNot(failureReason, By.cssSelector(css), text);
+    }
+
+    public Locomotive validateTextNot(String failureReason, By by, String text) {
         String actual = getText(by);
 
-        assertFalse(String.format("Text matches! [expected: %s] [actual: %s]", text, actual), text.equals(actual));
+        assertFalse(String.format(failureReason, text, actual), text.equals(actual));
         return this;
     }
 
     public Locomotive validateTextPresent(String text) {
-        assertTrue(driver.getPageSource().contains(text));
+        return validateTextPresent(String.format("Text [%s] is not present on the page when it should be!", text), text);
+    }
+
+    public Locomotive validateTextPresent(String failureReason, String text) {
+        assertTrue(failureReason, driver.getPageSource().contains(text));
         return this;
     }
 
     public Locomotive validateTextNotPresent(String text) {
-        assertFalse(driver.getPageSource().contains(text));
+        return validateTextNotPresent("Text [%s] is present on the page when it shouldn't be!", text);
+    }
+
+    public Locomotive validateTextNotPresent(String failureReason, String text) {
+        assertFalse(failureReason, driver.getPageSource().contains(text));
         return this;
     }
 
@@ -586,7 +688,15 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive validateChecked(By by) {
-        assertTrue(by.toString() + " is not checked!", isChecked(by));
+        return validateChecked(by.toString() + " is not checked!", by);
+    }
+
+    public Locomotive validateChecked(String failureReason, String css) {
+        return validateChecked(failureReason, By.cssSelector(css));
+    }
+
+    public Locomotive validateChecked(String failureReason, By by) {
+        assertTrue(failureReason, isChecked(by));
         return this;
     }
 
@@ -595,7 +705,15 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive validateUnchecked(By by) {
-        assertFalse(by.toString() + " is not unchecked!", isChecked(by));
+        return validateUnchecked(by.toString() + " is not unchecked!", by);
+    }
+
+    public Locomotive validateUnchecked(String failureReason, String css) {
+        return validateUnchecked(failureReason, By.cssSelector(css));
+    }
+
+    public Locomotive validateUnchecked(String failureReason, By by) {
+        assertFalse(failureReason, isChecked(by));
         return this;
     }
 
@@ -604,9 +722,21 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive validateAttribute(By by, String attr, String regex) {
+        return validateAttribute(String.format("Attribute doesn't match! [Selector: %s] [Attribute: %s] [Desired value: %s]",
+            by.toString(),
+            attr,
+            regex
+        ), by, attr, regex);
+    }
+
+    public Locomotive validateAttribute(String failureReason, String css, String attr, String regex) {
+        return validateAttribute(failureReason, By.cssSelector(css), attr, regex);
+    }
+
+    public Locomotive validateAttribute(String failureReason, By by, String attr, String regex) {
         String actual = null;
         try {
-            actual = driver.findElement(by).getAttribute(attr);
+            actual = waitForElement(by).getAttribute(attr);
             if (actual.equals(regex)) return this; // test passes.
         } catch (NoSuchElementException e) {
             fail("No such element [" + by.toString() + "] exists.");
@@ -617,31 +747,39 @@ public class Locomotive implements Conductor<Locomotive> {
         p = Pattern.compile(regex);
         m = p.matcher(actual);
 
-        assertTrue(String.format("Attribute doesn't match! [Selector: %s] [Attribute: %s] [Desired value: %s] [Actual value: %s]",
-                by.toString(),
-                attr,
-                regex,
-                actual
-                ), m.find());
+        assertTrue(failureReason + " [Actual: "+ actual +"]", m.find());
 
         return this;
     }
 
     public Locomotive validateUrl(String regex) {
+        return validateUrl("Url does not match regex [" + regex + "] (actual is: \""+driver.getCurrentUrl()+"\")", regex);
+    }
+
+    public Locomotive validateUrl(String failureReason, String regex) {
         p = Pattern.compile(regex);
         m = p.matcher(driver.getCurrentUrl());
 
-        assertTrue("Url does not match regex [" + regex + "] (actual is: \""+driver.getCurrentUrl()+"\")", m.find());
+        assertTrue(failureReason, m.find());
         return this;
     }
 
     public Locomotive validateTrue(boolean condition) {
-        assertTrue(condition);
+        return validateTrue("Expected true, got false", condition);
+    }
+
+    public Locomotive validateTrue(String failureReason, boolean condition) {
+        assertTrue(failureReason, condition);
         return this;
     }
 
     public Locomotive validateFalse(boolean condition) {
-        assertFalse(condition);
+        return validateFalse("Expected false, got true", condition);
+    }
+
+    @Override
+    public Locomotive validateFalse(String failureReason, boolean condition) {
+        assertFalse(failureReason, condition);
         return this;
     }
 
@@ -703,6 +841,18 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Locomotive logFatal(Object object) {
         log.fatal(object);
+        return this;
+    }
+
+    public Locomotive waitForCondition(ExpectedCondition<Boolean> condition) {
+        wait = new WebDriverWait(driver, configuration.timeout());
+        wait.until(condition);
+        return this;
+    }
+
+    public Locomotive waitForCondition(ExpectedCondition<Boolean> condition, int timeoutInSeconds) {
+        wait = new WebDriverWait(driver, timeoutInSeconds);
+        wait.until(condition);
         return this;
     }
 }
