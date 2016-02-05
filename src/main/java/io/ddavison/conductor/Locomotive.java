@@ -24,7 +24,10 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +58,8 @@ public class Locomotive implements Conductor<Locomotive> {
     public WebDriver driver;
 
     // max seconds before failing a script.
-    private final int MAX_ATTEMPTS = 5;
+    public int MAX_ATTEMPTS = 5;
+    public int MAX_TIMEOUT = 5;
 
     private int attempts = 0;
 
@@ -237,7 +241,7 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     /**
-     * Private method that acts as an arbiter of implicit timeouts of sorts.. sort of like a Wait For Ajax method.
+     * Method that acts as an arbiter of implicit timeouts of sorts.. sort of like a Wait For Ajax method.
      */
     public WebElement waitForElement(By by) {
         int attempts = 0;
@@ -262,11 +266,38 @@ public class Locomotive implements Conductor<Locomotive> {
         return driver.findElement(by);
     }
 
+    /**
+     * Wait for a specific condition (polling every 1s, for MAX_TIMOUT seconds)
+     * @param condition the condition to wait for
+     * @return The implementing class for fluency
+     */
+    public Locomotive waitForCondition(ExpectedCondition<?> condition) {
+        return waitForCondition(condition, MAX_TIMEOUT);
+    }
+
+    /**
+     * Wait for a specific condition (polling every 1s)
+     * @param condition the condition to wait for
+     * @param timeOutInSeconds the timeout in seconds
+     * @return The implementing class for fluency
+     */
+    public Locomotive waitForCondition(ExpectedCondition<?> condition, long timeOutInSeconds) {
+        return waitForCondition(condition, timeOutInSeconds, 1000); // poll every second
+    }
+
+    public Locomotive waitForCondition(ExpectedCondition<?> condition, long timeOutInSeconds, long sleepInMillis) {
+        WebDriverWait wait = new WebDriverWait(driver, timeOutInSeconds, sleepInMillis);
+        wait.until(condition);
+        return this;
+    }
+
     public Locomotive click(String css) {
         return click(By.cssSelector(css));
     }
 
     public Locomotive click(By by) {
+        waitForCondition(ExpectedConditions.not(ExpectedConditions.invisibilityOfElementLocated(by)))
+        .waitForCondition(ExpectedConditions.elementToBeClickable(by));
         waitForElement(by).click();
         return this;
     }
@@ -276,6 +307,8 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive setText(By by, String text) {
+        waitForCondition(ExpectedConditions.not(ExpectedConditions.invisibilityOfElementLocated(by)))
+        .waitForCondition(ExpectedConditions.elementToBeClickable(by));
         WebElement element = waitForElement(by);
         element.clear();
         element.sendKeys(text);
@@ -337,6 +370,8 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Locomotive check(By by) {
         if (!isChecked(by)) {
+            waitForCondition(ExpectedConditions.not(ExpectedConditions.invisibilityOfElementLocated(by)))
+            .waitForCondition(ExpectedConditions.elementToBeClickable(by));
             waitForElement(by).click();
             assertTrue(by.toString() + " did not check!", isChecked(by));
         }
@@ -349,6 +384,8 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Locomotive uncheck(By by) {
         if (isChecked(by)) {
+            waitForCondition(ExpectedConditions.not(ExpectedConditions.invisibilityOfElementLocated(by)))
+            .waitForCondition(ExpectedConditions.elementToBeClickable(by));
             waitForElement(by).click();
             assertFalse(by.toString() + " did not uncheck!", isChecked(by));
         }
@@ -361,6 +398,8 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Locomotive selectOptionByText(By by, String text) {
         Select box = new Select(waitForElement(by));
+        waitForCondition(ExpectedConditions.not(ExpectedConditions.invisibilityOfElementLocated(by)))
+        .waitForCondition(ExpectedConditions.elementToBeClickable(by));
         box.selectByVisibleText(text);
         return this;
     }
@@ -371,6 +410,8 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Locomotive selectOptionByValue(By by, String value) {
         Select box = new Select(waitForElement(by));
+        waitForCondition(ExpectedConditions.not(ExpectedConditions.invisibilityOfElementLocated(by)))
+        .waitForCondition(ExpectedConditions.elementToBeClickable(by));
         box.selectByValue(value);
         return this;
     }

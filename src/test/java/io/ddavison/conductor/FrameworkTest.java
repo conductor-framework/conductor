@@ -10,6 +10,8 @@
 package io.ddavison.conductor;
 
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @Config(browser = Browser.CHROME, url="http://ddavison.io/tests/getting-started-with-selenium.htm")
 public class FrameworkTest extends Locomotive {
@@ -68,5 +70,14 @@ public class FrameworkTest extends Locomotive {
     public void testVariables() throws Exception {
         store("initial_text", getText("#setTextField"))
         .validateTrue(get("initial_text").equals("some text")); // the text box defaults to the text "some text"
+    }
+
+    @Test
+    public void testWaitingFor() throws Exception {
+        By checkbox = By.cssSelector("#checkbox");
+        check(checkbox)
+        .waitForCondition(ExpectedConditions.elementSelectionStateToBe(
+            checkbox, true
+        ));
     }
 }
