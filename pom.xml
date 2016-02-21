@@ -6,7 +6,7 @@
 
   <name>conductor</name>
   <url>http://github.com/conductor-framework/conductor</url>
-  <version>2.1.1</version>
+  <version>2.2.1</version>
   <description>A quick and easy start-up browser automation framework based on Selenium WebDriver</description>
 
   <parent>
@@ -108,7 +108,7 @@
   </scm>
 
   <properties>
-    <selenium_version>2.43.1</selenium_version>
+    <selenium_version>2.52.0</selenium_version>
     <phantomjs_version>1.2.0</phantomjs_version>
     <CONDUCTOR_URL>${env.CONDUCTOR_URL}</CONDUCTOR_URL>
     <CONDUCTOR_BROWSER>${env.CONDUCTOR_BROWSER}</CONDUCTOR_BROWSER>
@@ -128,7 +128,22 @@
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>${selenium_version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-remote-driver</artifactId>
+      <version>${selenium_version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-chrome-driver</artifactId>
+      <version>${selenium_version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-edge-driver</artifactId>
       <version>${selenium_version}</version>
     </dependency>
     <dependency>
