@@ -10,7 +10,7 @@
 package io.ddavison.conductor;
 
 @Config(browser = Browser.SAFARI)
-public class SafariTests extends FrameworkTest {
+public class SafariTest extends FrameworkTest {
     @Override
     public void testWindowSwitching() throws Exception {}
 }
