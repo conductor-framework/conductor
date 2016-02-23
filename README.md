@@ -11,7 +11,7 @@ Using maven, include it as a dependency:
 <dependency>
   <groupId>io.ddavison</groupId>
   <artifactId>conductor</artifactId>
-  <version>2.2.1</version>
+  <version>2.2.2</version>
 </dependency>
 ```
 
