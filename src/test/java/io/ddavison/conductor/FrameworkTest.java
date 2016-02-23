@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Daniel Davison (http://github.com/ddavison)
+ * Copyright 2014-2016 Daniel Davison (http://github.com/ddavison) and Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  *
@@ -25,12 +25,6 @@ public class FrameworkTest extends Locomotive {
     public void testSetText() throws Exception {
         setText("#setTextField", "test")
         .validateText("#setTextField", "test");
-    }
-
-    @Test
-    public void testSetAndValidateText() throws Exception {
-        setAndValidateText("#setTextField", "set and validate text test")
-        .validateText("#setTextField", "set and validate text test");
     }
 
     @Test

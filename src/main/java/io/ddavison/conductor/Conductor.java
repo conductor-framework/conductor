@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Daniel Davison (http://github.com/ddavison)
+ * Copyright 2014-2016 Daniel Davison (http://github.com/ddavison) and Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  *
@@ -281,10 +281,27 @@ public interface Conductor<Test> {
     /**
      * Set and validate the text in a single step
      * @param css/by The element to set and validate the text of.
+     * @deprecated use <br>
+     *     <code>
+     *         setText("selector", "text")
+     *         .validateText("selector", "text")
+     *     </code>
+     *     instead
      * @param text The text to set and validate
      * @return The implementing class for fluency
      */
+    @Deprecated
     Test setAndValidateText(String css, String text);
+
+    /**
+    * @deprecated use <br>
+    *     <code>
+    *         setText("selector", "text")
+    *         .validateText("selector", "text")
+    *     </code>
+    *     instead
+    */
+    @Deprecated
     Test setAndValidateText(By by, String text);
 
     /*

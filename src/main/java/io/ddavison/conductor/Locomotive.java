@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Daniel Davison (http://github.com/ddavison)
+ * Copyright 2014-2016 Daniel Davison (http://github.com/ddavison) and Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  *
@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
@@ -85,11 +86,11 @@ public class Locomotive implements Conductor<Locomotive> {
 
         /**
          * Order of overrides:
-         * <ul>
+         * <ol>
          *     <li>Test</li>
          *     <li>JVM Arguments</li>
          *     <li>Default properties</li>
-         * </ul>
+         * </ol>
          */
         final Config testConfiguration = getClass().getAnnotation(Config.class);
 
@@ -146,39 +147,69 @@ public class Locomotive implements Conductor<Locomotive> {
                 if (isLocal) try {
                     driver = new ChromeDriver(capabilities);
                 } catch (Exception x) {
-                    logFatal("chromedriver not found. See https://github.com/ddavison/conductor/wiki/WebDriver-Executables for more information.");
+                    logFatal("Also see https://github.com/conductor-framework/conductor/wiki/WebDriver-Executables");
                     System.exit(1);
                 }
                 break;
             case FIREFOX:
                 capabilities = DesiredCapabilities.firefox();
-                if (isLocal) driver = new FirefoxDriver(capabilities);
+                if (isLocal) try {
+                    driver = new FirefoxDriver(capabilities);
+                } catch (Exception x) {
+                    x.printStackTrace();
+                    logFatal("Also see https://github.com/conductor-framework/conductor/wiki/WebDriver-Executables");
+                    System.exit(1);
+                }
                 break;
             case INTERNET_EXPLORER:
-                logFatal("iedriver not found. See https://github.com/ddavison/conductor/wiki/WebDriver-Executables for more information.");
-                System.exit(1);
                 capabilities = DesiredCapabilities.internetExplorer();
-                if (isLocal) driver = new InternetExplorerDriver(capabilities);
+                if (isLocal) try {
+                    driver = new InternetExplorerDriver(capabilities);
+                } catch (Exception x) {
+                    x.printStackTrace();
+                    logFatal("Also see https://github.com/conductor-framework/conductor/wiki/WebDriver-Executables");
+                    System.exit(1);
+                }
+                break;
+            case EDGE:
+                capabilities = DesiredCapabilities.edge();
+                if (isLocal) try {
+                    driver = new EdgeDriver(capabilities);
+                } catch (Exception x) {
+                    x.printStackTrace();
+                    logFatal("Also see https://github.com/conductor-framework/conductor/wiki/WebDriver-Executables");
+                    System.exit(1);
+                }
                 break;
             case SAFARI:
-                logFatal("safaridriver not found. See https://github.com/ddavison/conductor/wiki/WebDriver-Executables for more information.");
-                System.exit(1);
                 capabilities = DesiredCapabilities.safari();
-                if (isLocal) driver = new SafariDriver(capabilities);
+                if (isLocal) try {
+                    driver = new SafariDriver(capabilities);
+                } catch (Exception x) {
+                    x.printStackTrace();
+                    logFatal("Also see https://github.com/conductor-framework/conductor/wiki/WebDriver-Executables");
+                    System.exit(1);
+                }
                 break;
             case HTMLUNIT: // If you are designing a regression system, HtmlUnit is NOT recommended.
                 capabilities = DesiredCapabilities.htmlUnitWithJs();
-                if (isLocal) driver = new HtmlUnitDriver(capabilities);
+                if (isLocal) try {
+                    driver = new HtmlUnitDriver(capabilities);
+                } catch (Exception x) {
+                    x.printStackTrace();
+                    logFatal("Also see https://github.com/conductor-framework/conductor/wiki/WebDriver-Executables");
+                    System.exit(1);
+                }
                 break;
             case PHANTOMJS:
                 capabilities = DesiredCapabilities.phantomjs();
-                if (isLocal)
-                    try {
-                        driver = new PhantomJSDriver(capabilities);
-                    } catch (Exception x) {
-                        logFatal("phantomjs not found. Download them from https://bitbucket.org/ariya/phantomjs/downloads/ and extract the binary as phantomjs.exe, phantomjs.linux, or phantomjs.mac at project root for Windows, Linux, or MacOS.");
-                        System.exit(1);
-                    }
+                if (isLocal) try {
+                    driver = new PhantomJSDriver(capabilities);
+                } catch (Exception x) {
+                    x.printStackTrace();
+                    logFatal("Also see https://github.com/conductor-framework/conductor/wiki/WebDriver-Executables");
+                    System.exit(1);
+                }
                 break;
             default:
                 System.err.println("Unknown browser: " + configuration.browser());
@@ -456,10 +487,10 @@ public class Locomotive implements Conductor<Locomotive> {
 
         // when we reach this point, that means no window exists with that title..
         if (attempts == MAX_ATTEMPTS) {
-            fail("Window with title: " + regex + " did not appear after 5 tries. Exiting.");
+            fail("Window with title: " + regex + " did not appear after " + MAX_ATTEMPTS + " tries. Exiting.");
             return this;
         } else {
-            System.out.println("#waitForWindow() : Window doesn't exist yet. [" + regex + "] Trying again. " + attempts + "/" + MAX_ATTEMPTS);
+            System.out.println("#waitForWindow() : Window doesn't exist yet. [" + regex + "] Trying again. " + (attempts+1) + "/" + MAX_ATTEMPTS);
             attempts++;
             try {Thread.sleep(1000);}catch(Exception x) { x.printStackTrace(); }
             return waitForWindow(regex);
@@ -593,10 +624,12 @@ public class Locomotive implements Conductor<Locomotive> {
         return this;
     }
 
+    @Deprecated
     public Locomotive setAndValidateText(By by, String text) {
         return setText(by, text).validateText(by, text);
     }
 
+    @Deprecated
     public Locomotive setAndValidateText(String css, String text) {
         return setText(css, text).validateText(css, text);
     }

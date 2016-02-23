@@ -9,24 +9,8 @@
 
 package io.ddavison.conductor;
 
-/**
- * An enumeration of Browsers that Selenium 2 uses.
- * @author ddavison
- *
- */
-public enum Browser {
-    NONE("none"),
-    CHROME("chrome"),
-    FIREFOX("firefox"),
-    INTERNET_EXPLORER("ie"),
-    EDGE("edge"),
-    SAFARI("safari"),
-    HTMLUNIT("htmlunit"),
-    PHANTOMJS("phantomjs");
-    
-    String moniker;
-    
-    Browser(String moniker) {
-        this.moniker = moniker;
-    }
+@Config(browser = Browser.SAFARI)
+public class SafariTests extends FrameworkTest {
+    @Override
+    public void testWindowSwitching() throws Exception {}
 }
