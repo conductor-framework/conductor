@@ -575,6 +575,16 @@ public class Locomotive implements Conductor<Locomotive> {
         return this;
     }
 
+    @Override
+    public Locomotive switchToFrame(WebElement webElement) {
+        try {
+            driver.switchTo().frame(webElement);
+        } catch (Exception x) {
+            fail("Couldn't switch to frame with WebElement [" + webElement + "]");
+        }
+        return this;
+    }
+
     public Locomotive switchToFrame(int index) {
         try {
             driver.switchTo().frame(index);

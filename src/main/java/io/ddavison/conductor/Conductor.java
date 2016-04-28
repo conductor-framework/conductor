@@ -9,9 +9,7 @@
 
 package io.ddavison.conductor;
 
-import org.apache.commons.collections.Predicate;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
@@ -167,6 +165,13 @@ public interface Conductor<Test> {
      * @return The implementing class for fluency
      */
     Test switchToFrame(int index);
+
+    /**
+     * Switches to a frame based on a found WebElement
+     * @param webElement The WebElement object that was found.
+     * @return The implementing class for fluency
+     */
+    Test switchToFrame(WebElement webElement);
 
     /**
      * Switch back to the default content (the first window / frame that you were on before switching)
