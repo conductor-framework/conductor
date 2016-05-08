@@ -335,6 +335,12 @@ public interface Conductor<Test> {
      */
     Test goBack();
 
+    /**
+     * Refresh the page
+     * @return The implementing class for fluency
+     */
+    Test refresh();
+
     /*
         Test collections
      */

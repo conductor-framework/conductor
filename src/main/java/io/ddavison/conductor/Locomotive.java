@@ -736,6 +736,12 @@ public class Locomotive implements Conductor<Locomotive> {
         return this;
     }
 
+    @Override
+    public Locomotive refresh() {
+        driver.navigate().refresh();
+        return this;
+    }
+
     public Locomotive navigateTo(String url) {
         // absolute url
         if (url.contains("://"))      driver.navigate().to(url);
