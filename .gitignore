@@ -36,6 +36,7 @@
 
 # IntelliJ
 out/
+pmip/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
@@ -102,7 +103,8 @@ target/
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*

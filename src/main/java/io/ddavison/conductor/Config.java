@@ -16,7 +16,9 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Config {
-    public String url() default "";
-    public Browser browser() default Browser.NONE;
-    public String hub() default "";
+    String url() default "";
+    Browser browser() default Browser.NONE;
+    String hub() default "";
+    String baseUrl() default "";
+    String path() default "";
 }
