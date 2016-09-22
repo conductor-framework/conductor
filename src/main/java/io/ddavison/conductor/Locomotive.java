@@ -337,7 +337,7 @@ public class Locomotive implements Conductor<Locomotive> {
         String text;
         WebElement e = waitForElement(by);
 
-        if (e.getTagName().equalsIgnoreCase("input") || e.getTagName().equalsIgnoreCase("select"))
+        if (e.getTagName().equalsIgnoreCase("input") || e.getTagName().equalsIgnoreCase("select") || e.getTagName().equalsIgnoreCase("textarea"))
             text = e.getAttribute("value");
         else
             text = e.getText();

@@ -74,4 +74,10 @@ public class FrameworkTest extends Locomotive {
             checkbox, true
         ));
     }
+
+    @Test
+    public void testGetTextFromTextArea() throws Exception {
+        setText("#textArea", "some text")
+        .validateText("#textArea", "some text");
+    }
 }
