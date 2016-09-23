@@ -648,7 +648,7 @@ public class Locomotive implements Conductor<Locomotive> {
     public Locomotive validateAttribute(By by, String attr, String regex) {
         String actual = null;
         try {
-            actual = driver.findElement(by).getAttribute(attr);
+            actual = getAttribute(by, attr);
             if (actual.equals(regex)) return this; // test passes.
         } catch (NoSuchElementException e) {
             fail("No such element [" + by.toString() + "] exists.");

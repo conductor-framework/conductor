@@ -61,6 +61,13 @@ public class FrameworkTest extends Locomotive {
     }
 
     @Test
+    public void testValidatingAttributes() throws Exception {
+        validateAttribute("#click", "class", "^box$")
+        .click("#click")
+        .validateAttribute("#click", "class", ".*success.*");
+    }
+
+    @Test
     public void testVariables() throws Exception {
         store("initial_text", getText("#setTextField"))
         .validateTrue(get("initial_text").equals("some text")); // the text box defaults to the text "some text"
