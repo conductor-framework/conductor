@@ -13,13 +13,19 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
+import java.util.List;
+
 /**
  * @author ddavison
  * @since v2
  * @since Apr 03, 2015
  */
 public interface Conductor<Test> {
+    WebElement waitForElement(String css);
     WebElement waitForElement(By by);
+
+    List<WebElement> waitForElements(String css);
+    List<WebElement> waitForElements(By by);
 
     /*
         Actions

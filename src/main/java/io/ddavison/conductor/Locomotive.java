@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
+import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
@@ -229,30 +230,56 @@ public class Locomotive implements Conductor<Locomotive> {
         driver.quit();
     }
 
+    @Override
+    public WebElement waitForElement(String css) {
+        return waitForElement(By.cssSelector(css));
+    }
+
     /**
      * Method that acts as an arbiter of implicit timeouts of sorts.. sort of like a Wait For Ajax method.
      */
     public WebElement waitForElement(By by) {
-        int attempts = 0;
-        int size = driver.findElements(by).size();
+        int size = waitForElements(by).size();
 
-        while (size == 0) {
-            size = driver.findElements(by).size();
-            if (attempts == MAX_ATTEMPTS) fail(String.format("Could not find %s after %d seconds",
-                                                             by.toString(),
-                                                             MAX_ATTEMPTS));
-            attempts++;
-            try {
-                Thread.sleep(1000); // sleep for 1 second.
-            } catch (Exception x) {
-                fail("Failed due to an exception during Thread.sleep!");
-                x.printStackTrace();
-            }
+        if (size == 0) {
+            Assert.fail(String.format("Could not find %s after %d attempts",
+                    by.toString(),
+                    MAX_ATTEMPTS));
         }
 
-        if (size > 1) System.err.println("WARN: There are more than 1 " + by.toString() + " 's!");
+        if (size > 1) {
+            System.err.println("WARN: There are more than 1 " + by.toString() + " 's!");
+        }
 
         return driver.findElement(by);
+    }
+
+    @Override
+    public List<WebElement> waitForElements(String css) {
+        return waitForElements(By.cssSelector(css));
+    }
+
+    @Override
+    public List<WebElement> waitForElements(By by) {
+        List<WebElement> elements = driver.findElements(by);
+
+        if (elements.size() == 0) {
+            int attempts = 1;
+            while (attempts <= MAX_ATTEMPTS) {
+                try {
+                    Thread.sleep(1000); // sleep for 1 second.
+                } catch (Exception e) {
+                    Assert.fail("Failed due to an exception during Thread.sleep! - " + e.getMessage());
+                }
+
+                elements = driver.findElements(by);
+                if (elements.size() > 0) {
+                    break;
+                }
+                attempts++;
+            }
+        }
+        return elements;
     }
 
     /**
