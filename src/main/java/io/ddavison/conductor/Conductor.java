@@ -21,6 +21,7 @@ import java.util.List;
  * @since Apr 03, 2015
  */
 public interface Conductor<Test> {
+
     WebElement waitForElement(String css);
     WebElement waitForElement(By by);
 
@@ -305,13 +306,13 @@ public interface Conductor<Test> {
     Test setAndValidateText(String css, String text);
 
     /**
-    * @deprecated use <br>
-    *     <code>
-    *         setText("selector", "text")
-    *         .validateText("selector", "text")
-    *     </code>
-    *     instead
-    */
+     * @deprecated use <br>
+     *     <code>
+     *         setText("selector", "text")
+     *         .validateText("selector", "text")
+     *     </code>
+     *     instead
+     */
     @Deprecated
     Test setAndValidateText(By by, String text);
 
