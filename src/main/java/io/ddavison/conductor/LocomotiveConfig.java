@@ -1,10 +1,13 @@
 package io.ddavison.conductor;
 
-import io.ddavison.conductor.util.JvmUtil;
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.annotation.Annotation;
 import java.util.Properties;
+
+import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.remote.DesiredCapabilities;
+
+import io.ddavison.conductor.util.JvmUtil;
 
 /**
  * Created on 7/27/16.
@@ -108,4 +111,12 @@ public class LocomotiveConfig implements Config {
     public Class<? extends Annotation> annotationType() {
         return null;
     }
+
+	@Override
+	public Class<? extends Capabilities> capabilities() {
+		if (testConfig != null) {
+			return testConfig.capabilities();
+		}
+		return DesiredCapabilities.class;
+	}
 }

@@ -25,7 +25,10 @@ import org.openqa.selenium.logging.LogType;
  * @author {supernevi}
  * @since Oct 11, 2016
  */
-@Config(browser = Browser.CHROME, url="http://ddavison.io/tests/logging-test.htm")
+@Config(
+		browser = Browser.CHROME, 
+		url="http://ddavison.io/tests/logging-test.htm",
+		capabilities=ChromeCapabilitiesExample.class)
 public class LoggingTest extends Locomotive {
 	@Test
 	public void loggingTest() {
