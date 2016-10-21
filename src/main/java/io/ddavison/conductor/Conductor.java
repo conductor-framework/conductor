@@ -215,6 +215,15 @@ public interface Conductor<Test> {
     Test validateText(By by, String text);
 
     /**
+     * Validate that the text of an element is correct, ignoring case.
+     * @param css/by The element to validate the text of.
+     * @param text The text the element should have.
+     * @return The implementing class for fluency
+     */
+    Test validateTextIgnoreCase(String css, String text);
+    Test validateTextIgnoreCase(By by, String text);
+
+    /**
      * Validate that the text of an element is not matching text.
      * @param css/by The element to validate the text of.
      * @param text The text the element should not have.

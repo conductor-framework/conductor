@@ -613,6 +613,17 @@ public class Locomotive implements Conductor<Locomotive> {
         return this;
     }
 
+    @Override
+    public Locomotive validateTextIgnoreCase(String css, String text) {
+        return validateTextIgnoreCase(By.cssSelector(css), text);
+    }
+
+    @Override
+    public Locomotive validateTextIgnoreCase(By by, String text) {
+        Assertions.assertThat(text.toLowerCase()).isEqualTo(getText(by).toLowerCase());
+        return this;
+    }
+
     @Deprecated
     public Locomotive setAndValidateText(By by, String text) {
         return setText(by, text).validateText(by, text);
