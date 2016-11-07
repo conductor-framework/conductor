@@ -63,7 +63,7 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Actions actions;
 
-    private Map<String, String> vars = new HashMap<String, String>();
+    private Map<String, String> vars = new HashMap<>();
 
     /**
      * The url that an automated test will be testing.

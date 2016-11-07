@@ -1,6 +1,8 @@
 package io.ddavison.conductor;
 
+import com.sun.javafx.fxml.builder.URLBuilder;
 import io.ddavison.conductor.util.JvmUtil;
+import okhttp3.HttpUrl;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.annotation.Annotation;
@@ -8,7 +10,7 @@ import java.util.Properties;
 
 /**
  * Created on 7/27/16.
- *
+ * <p>
  * Order of overrides:
  * <ol>
  * <li>JVM Arguments</li>
@@ -33,21 +35,24 @@ public class LocomotiveConfig implements Config {
      */
     @Override
     public String url() {
-        String url = "";
+        HttpUrl url = null;
         if (!StringUtils.isEmpty(baseUrl())) {
-            url = baseUrl() + path();
+            url = HttpUrl.parse(baseUrl())
+                    .newBuilder()
+                    .addPathSegment(path())
+                    .build();
         } else {
             if (!StringUtils.isEmpty(properties.getProperty(Constants.DEFAULT_PROPERTY_URL))) {
-                url = properties.getProperty(Constants.DEFAULT_PROPERTY_URL);
+                url = HttpUrl.parse(properties.getProperty(Constants.DEFAULT_PROPERTY_URL));
             }
             if (testConfig != null && (!StringUtils.isEmpty(testConfig.url()))) {
-                url = testConfig.url();
+                url = HttpUrl.parse(testConfig.url());
             }
             if (!StringUtils.isEmpty(JvmUtil.getJvmProperty(Constants.JVM_CONDUCTOR_URL))) {
-                url = JvmUtil.getJvmProperty(Constants.JVM_CONDUCTOR_URL);
+                url = HttpUrl.parse(JvmUtil.getJvmProperty(Constants.JVM_CONDUCTOR_URL));
             }
         }
-        return url;
+        return url == null ? "" : url.toString();
     }
 
     @Override
@@ -82,17 +87,17 @@ public class LocomotiveConfig implements Config {
 
     @Override
     public String baseUrl() {
-        String baseUrl = "";
+        HttpUrl url = null;
         if (!StringUtils.isEmpty(properties.getProperty(Constants.DEFAULT_PROPERTY_BASE_URL))) {
-            baseUrl = properties.getProperty(Constants.DEFAULT_PROPERTY_BASE_URL);
+            url = HttpUrl.parse(properties.getProperty(Constants.DEFAULT_PROPERTY_BASE_URL));
         }
         if (testConfig != null && !StringUtils.isEmpty(testConfig.baseUrl())) {
-            baseUrl = testConfig.baseUrl();
+            url = HttpUrl.parse(testConfig.baseUrl());
         }
         if (!StringUtils.isEmpty(JvmUtil.getJvmProperty(Constants.JVM_CONDUCTOR_BASE_URL))) {
-            baseUrl = JvmUtil.getJvmProperty(Constants.JVM_CONDUCTOR_BASE_URL);
+            url = HttpUrl.parse(JvmUtil.getJvmProperty(Constants.JVM_CONDUCTOR_BASE_URL));
         }
-        return baseUrl;
+        return url != null ? url.toString() : "";
     }
 
     @Override
