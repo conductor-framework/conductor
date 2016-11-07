@@ -1,6 +1,5 @@
 package io.ddavison.conductor;
 
-import com.sun.javafx.fxml.builder.URLBuilder;
 import io.ddavison.conductor.util.JvmUtil;
 import okhttp3.HttpUrl;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +38,7 @@ public class LocomotiveConfig implements Config {
         if (!StringUtils.isEmpty(baseUrl())) {
             url = HttpUrl.parse(baseUrl())
                     .newBuilder()
-                    .addPathSegment(path())
+                    .addPathSegment(path().startsWith("/") ? path().substring(1) : path())
                     .build();
         } else {
             if (!StringUtils.isEmpty(properties.getProperty(Constants.DEFAULT_PROPERTY_URL))) {
