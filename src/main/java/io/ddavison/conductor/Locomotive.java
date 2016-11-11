@@ -11,11 +11,16 @@ package io.ddavison.conductor;
 
 import com.google.common.base.Strings;
 import io.ddavison.conductor.util.JvmUtil;
+import io.ddavison.conductor.util.ScreenShotUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.assertj.swing.assertions.Assertions;
 import org.junit.After;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
@@ -222,9 +227,43 @@ public class Locomotive implements Conductor<Locomotive> {
         return "";
     }
 
+    @Rule
+    public TestRule watchman = new TestWatcher() {
+        boolean failure;
+        Throwable e;
+        Description description;
+
+        @Override
+        protected void failed(Throwable e, Description description) {
+            if (configuration.screenshotsOnFail()) {
+                failure = true;
+                this.e = e;
+                this.description = description;
+            }
+        }
+
+        /**
+         * Take screenshot if the test failed.
+         */
+        @Override
+        protected void finished(Description description) {
+            super.finished(description);
+            if (configuration.screenshotsOnFail()) {
+                if (failure) {
+                    ScreenShotUtil.take(Locomotive.this,
+                            description.getDisplayName(),
+                            e.getMessage());
+                }
+                Locomotive.this.driver.quit();
+            }
+        }
+    };
+
     @After
     public void teardown() {
-        driver.quit();
+        if (!configuration.screenshotsOnFail()) {
+            driver.quit();
+        }
     }
 
     public WebElement waitForElement(String css) {

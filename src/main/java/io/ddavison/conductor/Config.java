@@ -21,4 +21,5 @@ public @interface Config {
     String hub() default "";
     String baseUrl() default "";
     String path() default "";
+    boolean screenshotsOnFail() default false;
 }

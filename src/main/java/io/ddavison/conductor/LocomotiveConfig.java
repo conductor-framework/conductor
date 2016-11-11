@@ -109,6 +109,34 @@ public class LocomotiveConfig implements Config {
     }
 
     @Override
+    public boolean screenshotsOnFail() {
+        return getBooleanValue(Constants.DEFAULT_PROPERTY_SCREENSHOTS_ON_FAIL,
+                testConfig == null ? null : testConfig.screenshotsOnFail(),
+                Constants.JVM_CONDUCTOR_SCREENSHOTS_ON_FAIL);
+    }
+
+    private boolean getBooleanValue(String defaultPropertyKey, Boolean testConfigValue, String jvmParamKey) {
+        boolean value = false;
+        String defaultValue = getProperty(defaultPropertyKey, Boolean.FALSE.toString());
+        String jvmValue = JvmUtil.getJvmProperty(jvmParamKey);
+
+        if(defaultValue != null && !StringUtils.isEmpty(defaultValue)) {
+            value = Boolean.valueOf(defaultValue);
+        }
+        if(testConfigValue != null) {
+            value = testConfigValue;
+        }
+        if(jvmValue != null && !StringUtils.isEmpty(jvmValue)) {
+            value = Boolean.valueOf(jvmValue);
+        }
+        return value;
+    }
+
+    private String getProperty(String key, String defaultValue) {
+        return properties == null ? "" : properties.getProperty(key, defaultValue);
+    }
+
+    @Override
     public Class<? extends Annotation> annotationType() {
         return null;
     }
