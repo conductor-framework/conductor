@@ -127,10 +127,8 @@ public class LocomotiveConfig implements Config {
                 DEFAULT_MAX_RETRIES);
     }
 
-    @Override
     public boolean screenshotsOnFail() {
         return getBooleanValue(Constants.DEFAULT_PROPERTY_SCREENSHOTS_ON_FAIL,
-                testConfig == null ? null : testConfig.screenshotsOnFail(),
                 Constants.JVM_CONDUCTOR_SCREENSHOTS_ON_FAIL);
     }
 
@@ -151,16 +149,13 @@ public class LocomotiveConfig implements Config {
         return value;
     }
 
-    private boolean getBooleanValue(String defaultPropertyKey, Boolean testConfigValue, String jvmParamKey) {
+    private boolean getBooleanValue(String defaultPropertyKey, String jvmParamKey) {
         boolean value = false;
         String defaultValue = getProperty(defaultPropertyKey, Boolean.FALSE.toString());
         String jvmValue = JvmUtil.getJvmProperty(jvmParamKey);
 
         if(defaultValue != null && !StringUtils.isEmpty(defaultValue)) {
             value = Boolean.valueOf(defaultValue);
-        }
-        if(testConfigValue != null) {
-            value = testConfigValue;
         }
         if(jvmValue != null && !StringUtils.isEmpty(jvmValue)) {
             value = Boolean.valueOf(jvmValue);

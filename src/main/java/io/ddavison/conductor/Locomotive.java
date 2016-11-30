@@ -55,7 +55,7 @@ public class Locomotive implements Conductor<Locomotive> {
     /**
      * All test configuration in here
      */
-    public Config configuration;
+    public LocomotiveConfig configuration;
 
     public WebDriver driver;
 
@@ -217,7 +217,6 @@ public class Locomotive implements Conductor<Locomotive> {
         boolean failure;
         Throwable e;
         Description description;
-
 
 
         @Override
@@ -384,7 +383,9 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public String getText(By by) {
         WebElement e = waitForElement(by);
-        return e.getTagName().equalsIgnoreCase("input") || e.getTagName().equalsIgnoreCase("select")
+        return e.getTagName().equalsIgnoreCase("input")
+                || e.getTagName().equalsIgnoreCase("select")
+                || e.getTagName().equalsIgnoreCase("textarea")
                 ? e.getAttribute("value")
                 : e.getText();
     }
