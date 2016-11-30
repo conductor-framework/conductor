@@ -28,6 +28,10 @@ public interface Conductor<Test> {
     List<WebElement> waitForElements(String css);
     List<WebElement> waitForElements(By by);
 
+    Test moveToElement(String css);
+    Test moveToElement(By by);
+    Test moveToElement(WebElement element);
+
     /*
         Actions
      */

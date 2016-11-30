@@ -63,7 +63,7 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Actions actions;
 
-    private Map<String, String> vars = new HashMap<>();
+    private Map<String, String> vars = new HashMap<String, String>();
 
     /**
      * The url that an automated test will be testing.
@@ -191,6 +191,7 @@ public class Locomotive implements Conductor<Locomotive> {
         // Set the webdriver env vars.
         if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("mac")) {
             System.setProperty("webdriver.chrome.driver", findFile("chromedriver.mac"));
+            System.setProperty("webdriver.gecko.driver", findFile("geckodriver.mac"));
         } else if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("nix") ||
                 JvmUtil.getJvmProperty("os.name").toLowerCase().contains("nux") ||
                 JvmUtil.getJvmProperty("os.name").toLowerCase().contains("aix")
@@ -199,6 +200,7 @@ public class Locomotive implements Conductor<Locomotive> {
         } else if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("win")) {
             System.setProperty("webdriver.chrome.driver", findFile("chromedriver.exe"));
             System.setProperty("webdriver.ie.driver", findFile("iedriver.exe"));
+            System.setProperty("webdriver.gecko.driver", findFile("geckodriver.exe"));
         }
     }
 
@@ -257,15 +259,19 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     /**
-     * Method that acts as an arbiter of implicit timeouts of sorts.. sort of like a Wait For Ajax method.
+     * Method that acts as an arbiter of implicit timeouts of sorts
      */
     public WebElement waitForElement(By by) {
-        int size = waitForElements(by).size();
+        List<WebElement> elements = waitForElements(by);
+        int size = elements.size();
 
         if (size == 0) {
             Assertions.fail(String.format("Could not find %s after %d attempts",
                     by.toString(),
                     configuration.retries()));
+        } else {
+            // If an element is found try to move to it.
+            moveToElement(elements.get(0));
         }
 
         if (size > 1) {
@@ -299,6 +305,25 @@ public class Locomotive implements Conductor<Locomotive> {
             }
         }
         return elements;
+    }
+
+    public Locomotive moveToElement(String css) {
+        return moveToElement(By.cssSelector(css));
+    }
+
+    public Locomotive moveToElement(By by) {
+        return moveToElement(waitForElement(by));
+    }
+
+    public Locomotive moveToElement(WebElement element) {
+        try {
+            Actions actions = new Actions(driver);
+            actions.moveToElement(element);
+            actions.perform();
+        } catch (UnsupportedCommandException e) {
+            logError("UnsupportedCommandException: moveToElement | " + e.getMessage());
+        }
+        return this;
     }
 
     /**
@@ -640,12 +665,10 @@ public class Locomotive implements Conductor<Locomotive> {
         return this;
     }
 
-    @Override
     public Locomotive validateTextIgnoreCase(String css, String text) {
         return validateTextIgnoreCase(By.cssSelector(css), text);
     }
 
-    @Override
     public Locomotive validateTextIgnoreCase(By by, String text) {
         Assertions.assertThat(text.toLowerCase()).isEqualTo(getText(by).toLowerCase());
         return this;
