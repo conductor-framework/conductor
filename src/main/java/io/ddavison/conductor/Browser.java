@@ -21,7 +21,6 @@ public enum Browser {
     INTERNET_EXPLORER("ie"),
     EDGE("edge"),
     SAFARI("safari"),
-    HTMLUNIT("htmlunit"),
     PHANTOMJS("phantomjs");
     
     String moniker;

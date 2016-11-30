@@ -53,6 +53,17 @@ The primary goals of this project are to...
 - Provide a free to use framework for any starting enterprise, or individual programmer.
 - Utilize the power of CSS!
 
+
+# Default Properties
+- baseUrl = {string: base url}
+- path = {string: path of the specific page (appended to baseUrl)}
+- browser = {string: chrome | firefox | ie | edge | safari | phantomjs}
+- timeout = {int: default equals 5 seconds per call}
+- retries = {int: default equals 5 retries}
+- screenshotsOnFail = {boolean: true or false}
+- hub = {string: url}
+- url = {string: full valid url} `@deprecated use baseUrl & path instead`
+
 # Actions
 You can perform any action that you could possibly do, using the inline actions.
 - ```click(By)```

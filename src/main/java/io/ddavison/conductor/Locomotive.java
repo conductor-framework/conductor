@@ -25,7 +25,6 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
@@ -59,10 +58,6 @@ public class Locomotive implements Conductor<Locomotive> {
     public Config configuration;
 
     public WebDriver driver;
-
-    // max seconds before failing a script.
-    public int MAX_ATTEMPTS = 5;
-    public int MAX_TIMEOUT = 5;
 
     private int attempts = 0;
 
@@ -160,16 +155,6 @@ public class Locomotive implements Conductor<Locomotive> {
                     System.exit(1);
                 }
                 break;
-            case HTMLUNIT: // If you are designing a regression system, HtmlUnit is NOT recommended.
-                capabilities = DesiredCapabilities.htmlUnitWithJs();
-                if (isLocal) try {
-                    driver = new HtmlUnitDriver(capabilities);
-                } catch (Exception x) {
-                    x.printStackTrace();
-                    logFatal("Also see https://github.com/conductor-framework/conductor/wiki/WebDriver-Executables");
-                    System.exit(1);
-                }
-                break;
             case PHANTOMJS:
                 capabilities = DesiredCapabilities.phantomjs();
                 if (isLocal) try {
@@ -233,6 +218,8 @@ public class Locomotive implements Conductor<Locomotive> {
         Throwable e;
         Description description;
 
+
+
         @Override
         protected void failed(Throwable e, Description description) {
             if (configuration.screenshotsOnFail()) {
@@ -279,7 +266,7 @@ public class Locomotive implements Conductor<Locomotive> {
         if (size == 0) {
             Assertions.fail(String.format("Could not find %s after %d attempts",
                     by.toString(),
-                    MAX_ATTEMPTS));
+                    configuration.retries()));
         }
 
         if (size > 1) {
@@ -298,7 +285,7 @@ public class Locomotive implements Conductor<Locomotive> {
 
         if (elements.size() == 0) {
             int attempts = 1;
-            while (attempts <= MAX_ATTEMPTS) {
+            while (attempts <= configuration.retries()) {
                 try {
                     Thread.sleep(1000); // sleep for 1 second.
                 } catch (Exception e) {
@@ -322,7 +309,7 @@ public class Locomotive implements Conductor<Locomotive> {
      * @return The implementing class for fluency
      */
     public Locomotive waitForCondition(ExpectedCondition<?> condition) {
-        return waitForCondition(condition, MAX_TIMEOUT);
+        return waitForCondition(condition, configuration.timeout());
     }
 
     /**
@@ -487,7 +474,7 @@ public class Locomotive implements Conductor<Locomotive> {
                     }
                 }
             } catch (NoSuchWindowException e) {
-                if (attempts <= MAX_ATTEMPTS) {
+                if (attempts <= configuration.retries()) {
                     attempts++;
 
                     try {
@@ -498,17 +485,17 @@ public class Locomotive implements Conductor<Locomotive> {
 
                     return waitForWindow(regex);
                 } else {
-                    Assertions.fail("Window with url|title: " + regex + " did not appear after " + MAX_ATTEMPTS + " tries. Exiting.", e);
+                    Assertions.fail("Window with url|title: " + regex + " did not appear after " + configuration.retries() + " tries. Exiting.", e);
                 }
             }
         }
 
         // when we reach this point, that means no window exists with that title..
-        if (attempts == MAX_ATTEMPTS) {
-            Assertions.fail("Window with title: " + regex + " did not appear after " + MAX_ATTEMPTS + " tries. Exiting.");
+        if (attempts == configuration.retries()) {
+            Assertions.fail("Window with title: " + regex + " did not appear after " + configuration.retries() + " tries. Exiting.");
             return this;
         } else {
-            System.out.println("#waitForWindow() : Window doesn't exist yet. [" + regex + "] Trying again. " + (attempts + 1) + "/" + MAX_ATTEMPTS);
+            System.out.println("#waitForWindow() : Window doesn't exist yet. [" + regex + "] Trying again. " + (attempts + 1) + "/" + configuration.retries());
             attempts++;
             try {
                 Thread.sleep(1000);

@@ -19,6 +19,9 @@ import java.util.Properties;
  */
 public class LocomotiveConfig implements Config {
 
+    public static int DEFAULT_MAX_RETRIES = 5;
+    public static int DEFAULT_MAX_TIMEOUT = 5;
+
     private Config testConfig;
     private Properties properties;
 
@@ -109,10 +112,43 @@ public class LocomotiveConfig implements Config {
     }
 
     @Override
+    public int timeout() {
+        return getIntValue(Constants.DEFAULT_PROPERTY_TIMEOUT,
+                testConfig == null ? null : testConfig.timeout(),
+                Constants.JVM_CONDUCTOR_TIMEOUT,
+                DEFAULT_MAX_TIMEOUT);
+    }
+
+    @Override
+    public int retries() {
+        return getIntValue(Constants.DEFAULT_PROPERTY_RETRIES,
+                testConfig == null ? null : testConfig.retries(),
+                Constants.JVM_CONDUCTOR_RETRIES,
+                DEFAULT_MAX_RETRIES);
+    }
+
+    @Override
     public boolean screenshotsOnFail() {
         return getBooleanValue(Constants.DEFAULT_PROPERTY_SCREENSHOTS_ON_FAIL,
                 testConfig == null ? null : testConfig.screenshotsOnFail(),
                 Constants.JVM_CONDUCTOR_SCREENSHOTS_ON_FAIL);
+    }
+
+    private int getIntValue(String defaultPropertyKey, Integer testConfigValue, String jvmParamKey, int defaultValue) {
+        int value = defaultValue;
+        String defaultPropValue = getProperty(defaultPropertyKey, String.valueOf(defaultValue));
+        String jvmValue = JvmUtil.getJvmProperty(jvmParamKey);
+
+        if(defaultPropValue != null && !StringUtils.isEmpty(defaultPropValue)) {
+            value = Integer.valueOf(defaultPropValue);
+        }
+        if(testConfigValue != null) {
+            value = testConfigValue;
+        }
+        if(jvmValue != null && !StringUtils.isEmpty(jvmValue)) {
+            value = Integer.valueOf(jvmValue);
+        }
+        return value;
     }
 
     private boolean getBooleanValue(String defaultPropertyKey, Boolean testConfigValue, String jvmParamKey) {

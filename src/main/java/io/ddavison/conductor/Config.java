@@ -21,5 +21,7 @@ public @interface Config {
     String hub() default "";
     String baseUrl() default "";
     String path() default "";
+    int timeout() default 5;
+    int retries() default 5;
     boolean screenshotsOnFail() default false;
 }
