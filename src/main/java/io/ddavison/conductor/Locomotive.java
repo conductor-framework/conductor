@@ -9,18 +9,37 @@
 
 package io.ddavison.conductor;
 
-import com.google.common.base.Strings;
-import io.ddavison.conductor.util.JvmUtil;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Properties;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.NoSuchWindowException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.firefox.GeckoDriverService;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -31,18 +50,12 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
-import java.util.NoSuchElementException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.common.base.Strings;
 
-import static org.junit.Assert.*;
+import io.ddavison.conductor.util.JvmUtil;
 
 /**
- * the base test that includes all Selenium 2 functionality that you will need
+ * the base test that includes all Selenium 3 functionality that you will need
  * to get you rolling.
  * @author ddavison
  *
@@ -68,6 +81,7 @@ public class Locomotive implements Conductor<Locomotive> {
 
     private Map<String, String> vars = new HashMap<String, String>();
 
+    private Locomotive(boolean simpleInstance) {}
     /**
      * The url that an automated test will be testing.
      */
@@ -117,7 +131,7 @@ public class Locomotive implements Conductor<Locomotive> {
         "\tBase url: %s\n", configuration.url(), configuration.browser().moniker, configuration.hub(), configuration.baseUrl()));
 
         boolean isLocal = StringUtils.isEmpty(configuration.hub());
-
+        
         switch (configuration.browser()) {
             case CHROME:
                 capabilities = DesiredCapabilities.chrome();
@@ -125,6 +139,7 @@ public class Locomotive implements Conductor<Locomotive> {
                 if (isLocal) try {
                     driver = new ChromeDriver(capabilities);
                 } catch (Exception x) {
+                	x.printStackTrace();
                     logFatal("Also see https://github.com/conductor-framework/conductor/wiki/WebDriver-Executables");
                     System.exit(1);
                 }
@@ -173,17 +188,6 @@ public class Locomotive implements Conductor<Locomotive> {
                     System.exit(1);
                 }
                 break;
-            case HTMLUNIT: // If you are designing a regression system, HtmlUnit is NOT recommended.
-                capabilities = DesiredCapabilities.htmlUnitWithJs();
-                capabilities.merge(extraCapabilities);
-                if (isLocal) try {
-                    driver = new HtmlUnitDriver(capabilities);
-                } catch (Exception x) {
-                    x.printStackTrace();
-                    logFatal("Also see https://github.com/conductor-framework/conductor/wiki/WebDriver-Executables");
-                    System.exit(1);
-                }
-                break;
             case PHANTOMJS:
                 capabilities = DesiredCapabilities.phantomjs();
                 capabilities.merge(extraCapabilities);
@@ -219,21 +223,32 @@ public class Locomotive implements Conductor<Locomotive> {
     static {
         // Set the webdriver env vars.
         if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("mac")) {
-            System.setProperty("webdriver.chrome.driver", findFile("chromedriver.mac"));
+            System.setProperty(ChromeDriverService.CHROME_DRIVER_EXE_PROPERTY, findFile("chromedriver.mac"));
         } else if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("nix") ||
                    JvmUtil.getJvmProperty("os.name").toLowerCase().contains("nux") ||
                    JvmUtil.getJvmProperty("os.name").toLowerCase().contains("aix")
         ) {
-            System.setProperty("webdriver.chrome.driver", findFile("chromedriver.linux"));
+            System.setProperty(ChromeDriverService.CHROME_DRIVER_EXE_PROPERTY, findFile("chromedriver.linux"));
         } else if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("win")) {
-            System.setProperty("webdriver.chrome.driver", findFile("chromedriver.exe"));
-            System.setProperty("webdriver.ie.driver", findFile("iedriver.exe"));
+            System.setProperty(ChromeDriverService.CHROME_DRIVER_EXE_PROPERTY, findFile("chromedriver.exe"));
+            System.setProperty(InternetExplorerDriverService.IE_DRIVER_EXE_PROPERTY, findFile("iedriver.exe"));
+            System.setProperty(GeckoDriverService.GECKO_DRIVER_EXE_PROPERTY, findFile("geckodriver.exe"));
         } else {
 
         }
     }
 
     static public String findFile(String filename) {
+    	URL url = new Locomotive(true).getClass().getClassLoader().getResource(filename);
+    	if(url != null)
+    	{
+	    	String filepath = url.getPath();
+			File from = new File(filepath);
+			if(from.exists())
+			{
+				return filepath;
+			}
+    	}
         String paths[] = {"", "bin/", "target/classes"}; // if you have chromedriver somewhere else on the path, then put it here.
         for (String path : paths) {
             if (new File(path + filename).exists())
