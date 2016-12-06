@@ -320,7 +320,7 @@ public class Locomotive implements Conductor<Locomotive> {
             Actions actions = new Actions(driver);
             actions.moveToElement(element);
             actions.perform();
-        } catch (UnsupportedCommandException e) {
+        } catch (WebDriverException e) {
             logError("UnsupportedCommandException: moveToElement | " + e.getMessage());
         }
         return this;
@@ -726,9 +726,14 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive validateAttribute(By by, String attr, String regex) {
+        return validateAttribute(waitForElement(by), attr, regex);
+    }
+
+    @Override
+    public Locomotive validateAttribute(WebElement element, String attr, String regex) {
         String actual = null;
         try {
-            actual = waitForElement(by).getAttribute(attr);
+            actual = element.getAttribute(attr);
             if (actual.equals(regex)) {
                 return this; // test passes
             }
@@ -740,12 +745,12 @@ public class Locomotive implements Conductor<Locomotive> {
         m = p.matcher(actual);
 
         Assertions.assertThat(m.find())
-                .isTrue()
-                .withFailMessage("Attribute doesn't match! [Selector: %s] [Attribute: %s] [Desired value: %s] [Actual value: %s]",
-                        by.toString(),
+                .withFailMessage("Attribute doesn't match! [Attribute: %s] [Desired value: %s] [Actual value: %s] [Element: %s]",
                         attr,
                         regex,
-                        actual);
+                        actual,
+                        element.toString())
+                .isTrue();
         return this;
     }
 
@@ -754,10 +759,10 @@ public class Locomotive implements Conductor<Locomotive> {
         m = p.matcher(driver.getCurrentUrl());
 
         Assertions.assertThat(m.find())
-                .isTrue()
                 .withFailMessage("Url does not match regex [%s] (actual is: \"%s\")",
                         regex,
-                        driver.getCurrentUrl());
+                        driver.getCurrentUrl())
+                .isTrue();
         return this;
     }
 

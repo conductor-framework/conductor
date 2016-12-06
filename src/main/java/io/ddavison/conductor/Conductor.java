@@ -281,6 +281,7 @@ public interface Conductor<Test> {
      */
     Test validateAttribute(String css, String attr, String regex);
     Test validateAttribute(By by, String attr, String regex);
+    Test validateAttribute(WebElement element, String attr, String regex);
 
     /**
      * Validate the Url
