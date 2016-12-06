@@ -738,7 +738,12 @@ public class Locomotive implements Conductor<Locomotive> {
                 return this; // test passes
             }
         } catch (Exception e) {
-            Assertions.fail(e.getMessage(), e);
+            Assertions.fail(String.format("Attribute not fount! [Attribute: %s] [Desired value: %s] [Actual value: %s] [Element: %s] [Message: %s]",
+                    attr,
+                    regex,
+                    actual,
+                    element.toString(),
+                    e.getMessage()), e);
         }
 
         p = Pattern.compile(regex);
