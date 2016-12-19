@@ -660,8 +660,11 @@ public class Locomotive implements Conductor<Locomotive> {
         return validateText(By.cssSelector(css), text);
     }
 
+    /**
+     * Validate Text ignores white spaces
+     */
     public Locomotive validateText(By by, String text) {
-        Assertions.assertThat(text).isEqualTo(getText(by));
+        Assertions.assertThat(text).isEqualToIgnoringWhitespace(getText(by));
         return this;
     }
 
@@ -669,8 +672,11 @@ public class Locomotive implements Conductor<Locomotive> {
         return validateTextIgnoreCase(By.cssSelector(css), text);
     }
 
+    /**
+     * Validate Text ignores case and white spaces
+     */
     public Locomotive validateTextIgnoreCase(By by, String text) {
-        Assertions.assertThat(text.toLowerCase()).isEqualTo(getText(by).toLowerCase());
+        Assertions.assertThat(text.toLowerCase()).isEqualToIgnoringWhitespace(getText(by).toLowerCase());
         return this;
     }
 

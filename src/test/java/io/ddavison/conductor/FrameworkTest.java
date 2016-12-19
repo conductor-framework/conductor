@@ -28,6 +28,12 @@ public class FrameworkTest extends Locomotive {
     }
 
     @Test
+    public void testTextIgnoringWhiteSpaces() {
+        setText("#setTextField", " test  ignoring white spaces")
+                .validateText("#setTextField", "test      ignoring     white    spaces    ");
+    }
+
+    @Test
     public void testCheckUncheck() throws Exception {
         check("#checkbox")
         .validateChecked("#checkbox")
