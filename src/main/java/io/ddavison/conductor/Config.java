@@ -13,6 +13,9 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.remote.DesiredCapabilities;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Config {
@@ -21,4 +24,5 @@ public @interface Config {
     String hub() default "";
     String baseUrl() default "";
     String path() default "";
+    Class<? extends Capabilities> capabilities() default DesiredCapabilities.class;
 }

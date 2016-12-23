@@ -108,7 +108,7 @@
   </scm>
 
   <properties>
-    <selenium_version>2.52.0</selenium_version>
+    <selenium_version>3.0.1</selenium_version>
     <phantomjs_version>1.2.0</phantomjs_version>
     <CONDUCTOR_URL>${env.CONDUCTOR_URL}</CONDUCTOR_URL>
     <CONDUCTOR_BROWSER>${env.CONDUCTOR_BROWSER}</CONDUCTOR_BROWSER>
@@ -144,11 +144,6 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-edge-driver</artifactId>
-      <version>${selenium_version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-htmlunit-driver</artifactId>
       <version>${selenium_version}</version>
     </dependency>
     <dependency>
