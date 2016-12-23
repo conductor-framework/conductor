@@ -334,6 +334,11 @@ public class Locomotive implements Conductor<Locomotive> {
         WebElement element = waitForElement(by);
         element.clear();
         element.sendKeys(text);
+        waitForCondition(
+        		ExpectedConditions.or(
+        				ExpectedConditions.textToBe(by, text), 
+        				ExpectedConditions.attributeToBe(by, "value", text)
+        				));
         return this;
     }
 
@@ -678,7 +683,7 @@ public class Locomotive implements Conductor<Locomotive> {
         return validateAttribute(By.cssSelector(css), attr, regex);
     }
 
-    public Locomotive validateAttribute(By by, String attr, String regex) {
+    public Locomotive validateAttribute(By by, String attr, String regex) {   	
         String actual = null;
         try {
             actual = getAttribute(by, attr);
