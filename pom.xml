@@ -109,7 +109,7 @@
 
   <properties>
     <selenium_version>2.52.0</selenium_version>
-    <phantomjs_version>1.2.0</phantomjs_version>
+    <phantomjs_version>1.2.1</phantomjs_version>
     <CONDUCTOR_URL>${env.CONDUCTOR_URL}</CONDUCTOR_URL>
     <CONDUCTOR_BROWSER>${env.CONDUCTOR_BROWSER}</CONDUCTOR_BROWSER>
     <CONDUCTOR_HUB>${env.CONDUCTOR_HUB}</CONDUCTOR_HUB>
@@ -122,7 +122,7 @@
       <version>4.10</version>
     </dependency>
     <dependency>
-      <groupId>com.github.detro</groupId>
+      <groupId>com.codeborne</groupId>
       <artifactId>phantomjsdriver</artifactId>
       <version>${phantomjs_version}</version>
     </dependency>
