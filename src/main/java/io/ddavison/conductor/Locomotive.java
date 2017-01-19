@@ -22,7 +22,10 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
@@ -36,6 +39,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -96,7 +100,7 @@ public class Locomotive implements Conductor<Locomotive> {
 
         configuration = new LocomotiveConfig(testConfiguration, props);
 
-        Capabilities capabilities;
+        DesiredCapabilities capabilities;
 
         baseUrl = configuration.url();
 
@@ -111,6 +115,7 @@ public class Locomotive implements Conductor<Locomotive> {
         switch (configuration.browser()) {
             case CHROME:
                 capabilities = DesiredCapabilities.chrome();
+            	capabilities.setCapability(CapabilityType.LOGGING_PREFS, getLogPrefs());
                 if (isLocal) try {
                     driver = new ChromeDriver(capabilities);
                 } catch (Exception x) {
@@ -120,6 +125,7 @@ public class Locomotive implements Conductor<Locomotive> {
                 break;
             case FIREFOX:
                 capabilities = DesiredCapabilities.firefox();
+                capabilities.setCapability(CapabilityType.LOGGING_PREFS, getLogPrefs());
                 if (isLocal) try {
                     driver = new FirefoxDriver(capabilities);
                 } catch (Exception x) {
@@ -130,6 +136,7 @@ public class Locomotive implements Conductor<Locomotive> {
                 break;
             case INTERNET_EXPLORER:
                 capabilities = DesiredCapabilities.internetExplorer();
+                capabilities.setCapability(CapabilityType.LOGGING_PREFS, getLogPrefs());
                 if (isLocal) try {
                     driver = new InternetExplorerDriver(capabilities);
                 } catch (Exception x) {
@@ -140,6 +147,7 @@ public class Locomotive implements Conductor<Locomotive> {
                 break;
             case EDGE:
                 capabilities = DesiredCapabilities.edge();
+                capabilities.setCapability(CapabilityType.LOGGING_PREFS, getLogPrefs());
                 if (isLocal) try {
                     driver = new EdgeDriver(capabilities);
                 } catch (Exception x) {
@@ -150,6 +158,7 @@ public class Locomotive implements Conductor<Locomotive> {
                 break;
             case SAFARI:
                 capabilities = DesiredCapabilities.safari();
+                capabilities.setCapability(CapabilityType.LOGGING_PREFS, getLogPrefs());
                 if (isLocal) try {
                     driver = new SafariDriver(capabilities);
                 } catch (Exception x) {
@@ -160,6 +169,7 @@ public class Locomotive implements Conductor<Locomotive> {
                 break;
             case HTMLUNIT: // If you are designing a regression system, HtmlUnit is NOT recommended.
                 capabilities = DesiredCapabilities.htmlUnitWithJs();
+                capabilities.setCapability(CapabilityType.LOGGING_PREFS, getLogPrefs());
                 if (isLocal) try {
                     driver = new HtmlUnitDriver(capabilities);
                 } catch (Exception x) {
@@ -170,6 +180,7 @@ public class Locomotive implements Conductor<Locomotive> {
                 break;
             case PHANTOMJS:
                 capabilities = DesiredCapabilities.phantomjs();
+                capabilities.setCapability(CapabilityType.LOGGING_PREFS, getLogPrefs());
                 if (isLocal) try {
                     driver = new PhantomJSDriver(capabilities);
                 } catch (Exception x) {
@@ -222,6 +233,13 @@ public class Locomotive implements Conductor<Locomotive> {
                 return path + filename;
         }
         return "";
+    }
+
+    private LoggingPreferences getLogPrefs()
+    {
+    	LoggingPreferences logPrefs = new LoggingPreferences();
+    	logPrefs.enable(LogType.BROWSER, Level.ALL);
+    	return logPrefs;
     }
 
     @After
