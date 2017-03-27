@@ -73,6 +73,24 @@ public class Locomotive implements Conductor<Locomotive> {
     private Pattern p;
     private Matcher m;
 
+    static {
+        // Set the webdriver env vars.
+        if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("mac")) {
+            System.setProperty("webdriver.chrome.driver", findFile("chromedriver.mac"));
+            System.setProperty("webdriver.gecko.driver", findFile("geckodriver.mac"));
+
+        } else if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("nix") || JvmUtil.getJvmProperty("os.name").toLowerCase().contains("nux") || JvmUtil.getJvmProperty("os.name").toLowerCase().contains("aix")) {
+            System.setProperty("webdriver.chrome.driver", findFile("chromedriver.linux"));
+            System.setProperty("webdriver.gecko.driver", findFile("geckodriver.linux"));
+
+        } else if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("win")) {
+            System.setProperty("webdriver.chrome.driver", findFile("chromedriver.exe"));
+            System.setProperty("webdriver.gecko.driver", findFile("geckodriver.exe"));
+            System.setProperty("webdriver.ie.driver", findFile("iedriver.exe"));
+            System.setProperty("webdriver.edge.driver", findFile("MicrosoftWebDriver.exe"));
+        }
+    }
+
     public Locomotive() {
         final Properties props = new Properties();
         try {
@@ -184,23 +202,6 @@ public class Locomotive implements Conductor<Locomotive> {
 
         if (StringUtils.isNotEmpty(baseUrl)) {
             driver.navigate().to(baseUrl);
-        }
-    }
-
-    static {
-        // Set the webdriver env vars.
-        if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("mac")) {
-            System.setProperty("webdriver.chrome.driver", findFile("chromedriver.mac"));
-            System.setProperty("webdriver.gecko.driver", findFile("geckodriver.mac"));
-        } else if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("nix") ||
-                JvmUtil.getJvmProperty("os.name").toLowerCase().contains("nux") ||
-                JvmUtil.getJvmProperty("os.name").toLowerCase().contains("aix")
-                ) {
-            System.setProperty("webdriver.chrome.driver", findFile("chromedriver.linux"));
-        } else if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("win")) {
-            System.setProperty("webdriver.chrome.driver", findFile("chromedriver.exe"));
-            System.setProperty("webdriver.ie.driver", findFile("iedriver.exe"));
-            System.setProperty("webdriver.gecko.driver", findFile("geckodriver.exe"));
         }
     }
 
