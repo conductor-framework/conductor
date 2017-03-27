@@ -1,7 +1,9 @@
 language: java
 jdk:
   - oraclejdk8
-script:
+before_install:
   - mvn install -DskipTests
+#script:
+#  - mvn test
 notifications:
   email: false

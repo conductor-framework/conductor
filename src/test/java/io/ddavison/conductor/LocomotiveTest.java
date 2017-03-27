@@ -8,8 +8,7 @@ import org.junit.Test;
  */
 @Config(
         baseUrl = "http://ddavison.io",
-        path = "/tests/getting-started-with-selenium.htm"
-)
+        path = "/tests/getting-started-with-selenium.htm")
 public class LocomotiveTest extends Locomotive {
 
     @Test
