@@ -90,7 +90,7 @@
     </scm>
 
     <properties>
-        <selenium_version>2.52.0</selenium_version>
+        <selenium_version>3.3.1</selenium_version>
         <phantomjs_version>1.2.0</phantomjs_version>
         <CONDUCTOR_URL>${env.CONDUCTOR_URL}</CONDUCTOR_URL>
         <CONDUCTOR_BROWSER>${env.CONDUCTOR_BROWSER}</CONDUCTOR_BROWSER>
