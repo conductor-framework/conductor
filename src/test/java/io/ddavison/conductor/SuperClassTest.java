@@ -13,5 +13,5 @@ package io.ddavison.conductor;
  * @author {ddavison}
  * @since Nov 05, 2014
  */
-@Config(url="http://google.com", browser=Browser.CHROME)
+@Config(url="http://google.com", browser=Browser.FIREFOX)
 public class SuperClassTest extends Locomotive {}
