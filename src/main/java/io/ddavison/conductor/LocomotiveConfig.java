@@ -64,7 +64,7 @@ public class LocomotiveConfig implements Config {
             browser = Browser.valueOf(properties.getProperty(Constants.DEFAULT_PROPERTY_BROWSER).toUpperCase());
         }
         if (testConfig != null && testConfig.browser() != Browser.NONE) {
-            return testConfig.browser();
+            browser =  testConfig.browser();
         }
         if (!StringUtils.isEmpty(JvmUtil.getJvmProperty(Constants.JVM_CONDUCTOR_BROWSER))) {
             browser = Browser.valueOf(JvmUtil.getJvmProperty(Constants.JVM_CONDUCTOR_BROWSER).toUpperCase());
