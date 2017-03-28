@@ -14,3 +14,5 @@ script:
   - mvn test -DCONDUCTOR_BROWSER=firefox
 notifications:
   email: false
+addons:
+  firefox: "52.0.2"
