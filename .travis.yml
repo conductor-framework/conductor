@@ -1,3 +1,4 @@
+sudo: required
 language: java
 jdk:
   - oraclejdk8
@@ -6,7 +7,12 @@ cache:
   - $HOME/.m2
 before_install:
   - mvn install -DskipTests
-#script:
-#  - mvn test
+  - "export DISPLAY=:99.0"
+  - "sudo sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
+script:
+  - mvn test -DCONDUCTOR_BROWSER=firefox
 notifications:
   email: false
+addons:
+  firefox: "52.0.2"
