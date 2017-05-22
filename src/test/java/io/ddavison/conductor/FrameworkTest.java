@@ -14,7 +14,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @Config(
-        browser = Browser.FIREFOX,
+        browser = Browser.CHROME,
         url = "http://ddavison.io/tests/getting-started-with-selenium.htm")
 public class FrameworkTest extends Locomotive {
     @Test
