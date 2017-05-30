@@ -1,0 +1,18 @@
+{
+  "environments": {
+    "test": {
+      "buildpacks": [
+        {
+          "url": "https://github.com/heroku/heroku-buildpack-chromedriver"
+        },
+        {
+          "url": "https://github.com/heroku/heroku-buildpack-xvfb-google-chrome"
+        }
+      ],
+      "scripts": {
+        "test-setup": "mvn install -DskipTests",
+        "test": "mvn -B test -DCONDUCTOR_BROWSER=chrome"
+      }
+    }
+  }
+}
