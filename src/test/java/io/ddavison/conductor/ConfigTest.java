@@ -1,5 +1,6 @@
 package io.ddavison.conductor;
 
+import io.ddavison.conductor.util.PropertiesUtil;
 import org.assertj.swing.assertions.Assertions;
 import org.junit.After;
 import org.junit.Before;
@@ -20,11 +21,7 @@ public class ConfigTest {
 
     @Before
     public void setup() {
-        try {
-            defaultProperties.load(getClass().getResourceAsStream("/default.properties"));
-        } catch (Exception e) {
-            Assertions.fail("Couldn't load in default properties");
-        }
+        defaultProperties = new PropertiesUtil().loadDefault();
         defaultProperties.setProperty(Constants.DEFAULT_PROPERTY_TIMEOUT, String.valueOf(15));
 
         testConfig = mock(Config.class);
