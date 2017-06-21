@@ -10,6 +10,7 @@
 package io.ddavison.conductor;
 
 import com.google.common.base.Strings;
+import io.ddavison.conductor.util.PropertiesUtil;
 import io.ddavison.conductor.util.JvmUtil;
 import io.ddavison.conductor.util.ScreenShotUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -93,12 +94,7 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive() {
-        final Properties props = new Properties();
-        try {
-            props.load(getClass().getResourceAsStream("/default.properties"));
-        } catch (Exception e) {
-            logFatal("Couldn't load in default properties");
-        }
+        final Properties props = new PropertiesUtil().loadDefault();
 
         /*
          * Order of overrides:
