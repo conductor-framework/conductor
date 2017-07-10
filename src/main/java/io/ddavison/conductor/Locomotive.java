@@ -252,7 +252,7 @@ public class Locomotive implements Conductor<Locomotive> {
                 if (failure) {
                     ScreenShotUtil.take(Locomotive.this,
                             description.getDisplayName(),
-                            e.getMessage());
+                            e.getMessage() != null ? e.getMessage() : e.toString());
                 }
                 Locomotive.this.driver.quit();
             }
