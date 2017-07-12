@@ -6,7 +6,7 @@
 
   <name>conductor</name>
   <url>http://github.com/conductor-framework/conductor</url>
-  <version>2.3.0</version>
+  <version>3.0.1</version>
   <description>A quick and easy start-up browser automation framework based on Selenium WebDriver</description>
 
   <parent>
@@ -17,19 +17,19 @@
 
   <distributionManagement>
     <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <id>nexus-snapshot</id>
+      <url>http://repo.leafmill.com/repository/maven-snapshots/</url>
     </snapshotRepository>
     <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>nexus-release</id>
+      <url>https://repo.leafmill.com/repository/maven-releases/</url>
     </repository>
   </distributionManagement>
 
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
       <distribution>source</distribution>
     </license>
   </licenses>
@@ -41,21 +41,11 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.3</version>
-        <extensions>true</extensions>
-        <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>true</autoReleaseAfterClose>
-        </configuration>
-      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -82,24 +72,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.6</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-            <configuration>
-              <keyname>${gpg.keyname}</keyname>
-              <passphraseServerId>${gpg.keyname}</passphraseServerId>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 
@@ -108,11 +80,8 @@
   </scm>
 
   <properties>
-    <selenium_version>2.52.0</selenium_version>
+    <selenium_version>3.4.0</selenium_version>
     <phantomjs_version>1.2.1</phantomjs_version>
-    <CONDUCTOR_URL>${env.CONDUCTOR_URL}</CONDUCTOR_URL>
-    <CONDUCTOR_BROWSER>${env.CONDUCTOR_BROWSER}</CONDUCTOR_BROWSER>
-    <CONDUCTOR_HUB>${env.CONDUCTOR_HUB}</CONDUCTOR_HUB>
   </properties>
 
   <dependencies>
@@ -144,11 +113,6 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-edge-driver</artifactId>
-      <version>${selenium_version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-htmlunit-driver</artifactId>
       <version>${selenium_version}</version>
     </dependency>
     <dependency>
@@ -190,4 +154,13 @@
       <version>2.0.2</version>
     </dependency>
   </dependencies>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>21.0</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>
