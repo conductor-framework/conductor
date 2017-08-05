@@ -158,16 +158,6 @@ public class Locomotive implements Conductor<Locomotive> {
                     System.exit(1);
                 }
                 break;
-            case HTMLUNIT: // If you are designing a regression system, HtmlUnit is NOT recommended.
-                capabilities = DesiredCapabilities.htmlUnitWithJs();
-                if (isLocal) try {
-                    driver = new HtmlUnitDriver(capabilities);
-                } catch (Exception x) {
-                    x.printStackTrace();
-                    logFatal("Also see https://github.com/conductor-framework/conductor/wiki/WebDriver-Executables");
-                    System.exit(1);
-                }
-                break;
             case PHANTOMJS:
                 capabilities = DesiredCapabilities.phantomjs();
                 if (isLocal) try {
