@@ -121,6 +121,16 @@ public interface Conductor<Test> {
     Test selectOptionByValue(String css, String value);
     Test selectOptionByValue(By by, String value);
 
+
+    /**
+     * Selects an option from a dropdown ({@literal <select> tag}) based on the index.
+     * @param css/by The element
+     * @param i The index of which it appears (zero based)
+     * @return The implementing class for fluency
+     */
+    Test selectOptionByIndex(String css, Integer i);
+    Test selectOptionByIndex(By by, Integer i);
+
     /**
      * Waits for a window to appear, then switches to it.
      * @param regex Regex enabled. Url of the window, or title.

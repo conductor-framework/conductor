@@ -395,6 +395,20 @@ public class Locomotive implements Conductor<Locomotive> {
         return this;
     }
 
+    @Override
+    public Locomotive selectOptionByIndex(String css, Integer i) {
+        return selectOptionByIndex(By.cssSelector(css), i);
+    }
+
+    @Override
+    public Locomotive selectOptionByIndex(By by, Integer i) {
+        Select box = new Select(waitForElement(by));
+        waitForCondition(ExpectedConditions.not(ExpectedConditions.invisibilityOfElementLocated(by)))
+        .waitForCondition(ExpectedConditions.elementToBeClickable(by));
+        box.selectByIndex(i);
+        return this;
+    }
+
     /* Window / Frame Switching */
 
     public Locomotive waitForWindow(String regex) {

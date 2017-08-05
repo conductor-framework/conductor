@@ -87,4 +87,12 @@ public class FrameworkTest extends Locomotive {
         setText("#textArea", "some text")
         .validateText("#textArea", "some text");
     }
+
+    @Test
+    public void testSelectOptionByIndex() throws Exception {
+        selectOptionByIndex("#select", 2)
+        .validateText("#select", "3")
+        .selectOptionByIndex(By.xpath("//*[@id='select']"), 0)
+        .validateText("#select", "1");
+    }
 }
