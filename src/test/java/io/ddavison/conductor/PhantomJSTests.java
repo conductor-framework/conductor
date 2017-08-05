@@ -6,7 +6,7 @@ import org.junit.Test;
  * Created by dj on 1/18/17.
  */
 @Config(browser = Browser.PHANTOMJS, url="http://ddavison.io/tests/getting-started-with-selenium.htm")
-public class PhantomJSTest extends Locomotive {
+public class PhantomJSTests extends Locomotive {
   @Test
   public void testClick() throws Exception {
     click("#click")
