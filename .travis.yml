@@ -14,4 +14,4 @@ script:
 notifications:
   email: false
 addons:
-  firefox: "52.0.2"
+  firefox: "55.0.3"
