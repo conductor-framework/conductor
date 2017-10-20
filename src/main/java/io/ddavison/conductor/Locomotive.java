@@ -613,6 +613,34 @@ public class Locomotive implements Conductor<Locomotive> {
         return closeWindow(null);
     }
 
+    /**
+     * Scroll to a specified element
+     *
+     * @param css Css locator for the element to scroll to
+     * @return This instance for method chaining.
+     */
+    public Locomotive scrollTo(String css) {
+        scrollTo(By.cssSelector(css));
+
+        return this;
+    }
+
+    /**
+     * Scroll to a specified element
+     *
+     * @param by Locator for the element to scroll to
+     * @return This instance for method chaining.
+     */
+    public Locomotive scrollTo(By by) {
+        // Find the element to scroll to.
+        final WebElement element = waitForElement(by);
+
+        // Execute javascript to scroll to the element.
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView()", element);
+
+        return this;
+    }
+
     public Locomotive switchToFrame(String idOrName) {
         try {
             driver.switchTo().frame(idOrName);
