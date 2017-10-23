@@ -10,15 +10,11 @@
 package io.ddavison.conductor;
 
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import static java.lang.String.format;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 
 @Config(
         browser = Browser.CHROME,
@@ -107,32 +103,41 @@ public class FrameworkTest extends Locomotive {
     }
 
     /**
-     * Test for {@link #scrollTo(WebElement)}.
+     * Verifies {@link #isInView(String)} returns true for an element in view.
+     */
+    @Test
+    public void testIsInView() {
+        assertThat(isInView(NEW_TAB_LINK_CSS)).isTrue();
+    }
+
+    /**
+     * Verifies {@link #isInView(String)} returns false for an element not in view.
+     */
+    @Test
+    public void testIsInViewNegative() {
+        // setup the test page to not be able to see the open new tab link
+        driver.manage().window().setSize(new Dimension(200, 200));
+
+        assertThat(isInView(NEW_TAB_LINK_CSS)).isFalse();
+    }
+
+    /**
+     * Test for {@link #scrollTo(String)}.
      *
-     * Verifies an out of view element can only be clicked if scrolled to.
+     * Verifies an out of view element can be scrolled to.
      */
     @Test
     public void testScrollTo() {
-        final WebElement newTabLink               = waitForElement(NEW_TAB_LINK_CSS);
-        final String     expectedExceptionMessage = "Element is not clickable";
+        final WebElement newTabLink = waitForElement(NEW_TAB_LINK_CSS);
 
-        // setup the test page to make scrolling necessary: expect to not be able to click on the open new tab link
-        driver.manage().window().setSize(new Dimension(100, 50));
-
-        // expect an exception for a click on the out of view link
-        try {
-            newTabLink.click();
-            fail(format("Expected WebDriverException with message '%s' to be thrown.", expectedExceptionMessage));
-        } catch (WebDriverException exception) {
-            assertTrue(format("Expected exception message to include '%s'.", expectedExceptionMessage),
-                    exception.getMessage().contains(expectedExceptionMessage));
-        }
+        // setup the test page to make scrolling necessary: expect to not see the open new tab link
+        driver.manage().window().setSize(new Dimension(200, 200));
 
         // scroll to the link
         scrollTo(NEW_TAB_LINK_CSS);
 
         // verify the open new tab link is now clickable without throwing an exception.
-        newTabLink.click();
+        assertThat(isInView(newTabLink)).isTrue();
     }
 
 }

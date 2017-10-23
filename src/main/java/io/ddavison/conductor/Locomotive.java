@@ -411,6 +411,32 @@ public class Locomotive implements Conductor<Locomotive> {
         return waitForElement(by).isSelected();
     }
 
+    public boolean isInView(String css) {
+        return isInView(By.cssSelector(css));
+    }
+
+    public boolean isInView(By by) {
+        return isInView(driver.findElement(by));
+    }
+
+    /**
+     * Returns whether the provided element is in the current view.
+     */
+    public boolean isInView(WebElement element) {
+        return (Boolean) ((JavascriptExecutor) driver).executeScript(
+                "var element = arguments[0],                                " +
+                        "  box = element.getBoundingClientRect(),           " +
+                        "  centerX = box.left + box.width / 2,              " +
+                        "  centerY = box.top + box.height / 2,              " +
+                        "  e = document.elementFromPoint(centerX, centerY); " +
+                        "for (; e; e = e.parentElement) {                   " +
+                        "  if (e === element)                               " +
+                        "    return true;                                   " +
+                        "}                                                  " +
+                        "return false;                                      "
+                , element);
+    }
+
     public boolean isPresent(String css) {
         return isPresent(By.cssSelector(css));
     }
