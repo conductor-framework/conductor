@@ -17,7 +17,7 @@ Using maven, include it as a dependency:
 
 <dependencies>
     <dependency>
-        <groupId>com.github.jossjacobo</groupId>
+        <groupId>com.github.willowtreeapps</groupId>
         <artifactId>conductor</artifactId>
         <version>2.5.0</version>
     </dependency>
