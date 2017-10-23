@@ -282,8 +282,8 @@ public class Locomotive implements Conductor<Locomotive> {
                     by.toString(),
                     configuration.retries()));
         } else {
-            // If an element is found try to move to it.
-            moveToElement(elements.get(0));
+            // If an element is found then scroll to it.
+            scrollTo(elements.get(0));
         }
 
         if (size > 1) {
@@ -372,7 +372,12 @@ public class Locomotive implements Conductor<Locomotive> {
     public Locomotive click(By by) {
         waitForCondition(ExpectedConditions.not(ExpectedConditions.invisibilityOfElementLocated(by)))
                 .waitForCondition(ExpectedConditions.elementToBeClickable(by));
-        waitForElement(by).click();
+        final WebElement element = waitForElement(by);
+
+        // position mouse over element before click.
+        moveToElement(element);
+        element.click();
+
         return this;
     }
 
@@ -620,9 +625,7 @@ public class Locomotive implements Conductor<Locomotive> {
      * @return This instance for method chaining.
      */
     public Locomotive scrollTo(String css) {
-        scrollTo(By.cssSelector(css));
-
-        return this;
+        return scrollTo(By.cssSelector(css));
     }
 
     /**
@@ -632,9 +635,17 @@ public class Locomotive implements Conductor<Locomotive> {
      * @return This instance for method chaining.
      */
     public Locomotive scrollTo(By by) {
-        // Find the element to scroll to.
-        final WebElement element = waitForElement(by);
+        // Find the element to scroll to. Cannot use waitForElement() because it would create an infinite loop.s
+        return scrollTo(driver.findElement(by));
+    }
 
+    /**
+     * Scroll to a specified element
+     *
+     * @param element to scroll to
+     * @return This instance for method chaining.
+     */
+    public Locomotive scrollTo(WebElement element) {
         // Execute javascript to scroll to the element.
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView()", element);
 

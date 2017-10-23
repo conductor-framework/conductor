@@ -11,12 +11,22 @@ package io.ddavison.conductor;
 
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import static java.lang.String.format;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @Config(
         browser = Browser.CHROME,
         url = "http://ddavison.io/tests/getting-started-with-selenium.htm")
 public class FrameworkTest extends Locomotive {
+
+    private static final String NEW_TAB_LINK_CSS = "a[href='http://google.com']";
+
     @Test
     public void testClick() throws Exception {
         click("#click")
@@ -61,7 +71,7 @@ public class FrameworkTest extends Locomotive {
 
     @Test
     public void testWindowSwitching() throws Exception {
-        click("a[href='http://google.com']")
+        click(NEW_TAB_LINK_CSS)
                 .waitForWindow(".*Google.*")
                 .validatePresent("[name='q']")
                 .closeWindow()
@@ -95,4 +105,34 @@ public class FrameworkTest extends Locomotive {
         setText("#textArea", "some text")
                 .validateText("#textArea", "some text");
     }
+
+    /**
+     * Test for {@link #scrollTo(WebElement)}.
+     *
+     * Verifies an out of view element can only be clicked if scrolled to.
+     */
+    @Test
+    public void testScrollTo() {
+        final WebElement newTabLink               = waitForElement(NEW_TAB_LINK_CSS);
+        final String     expectedExceptionMessage = "Element is not clickable";
+
+        // setup the test page to make scrolling necessary: expect to not be able to click on the open new tab link
+        driver.manage().window().setSize(new Dimension(100, 50));
+
+        // expect an exception for a click on the out of view link
+        try {
+            newTabLink.click();
+            fail(format("Expected WebDriverException with message '%s' to be thrown.", expectedExceptionMessage));
+        } catch (WebDriverException exception) {
+            assertTrue(format("Expected exception message to include '%s'.", expectedExceptionMessage),
+                    exception.getMessage().contains(expectedExceptionMessage));
+        }
+
+        // scroll to the link
+        scrollTo(NEW_TAB_LINK_CSS);
+
+        // verify the open new tab link is now clickable without throwing an exception.
+        newTabLink.click();
+    }
+
 }
