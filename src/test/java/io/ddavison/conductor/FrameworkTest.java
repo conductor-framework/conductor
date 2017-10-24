@@ -10,13 +10,19 @@
 package io.ddavison.conductor;
 
 import org.junit.Test;
-import org.openqa.selenium.By;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 
 @Config(
         browser = Browser.CHROME,
         url = "http://ddavison.io/tests/getting-started-with-selenium.htm")
 public class FrameworkTest extends Locomotive {
+
+    private static final String NEW_TAB_LINK_CSS = "a[href='http://google.com']";
+
     @Test
     public void testClick() throws Exception {
         click("#click")
@@ -61,7 +67,7 @@ public class FrameworkTest extends Locomotive {
 
     @Test
     public void testWindowSwitching() throws Exception {
-        click("a[href='http://google.com']")
+        click(NEW_TAB_LINK_CSS)
                 .waitForWindow(".*Google.*")
                 .validatePresent("[name='q']")
                 .closeWindow()
@@ -95,4 +101,43 @@ public class FrameworkTest extends Locomotive {
         setText("#textArea", "some text")
                 .validateText("#textArea", "some text");
     }
+
+    /**
+     * Verifies {@link #isInView(String)} returns true for an element in view.
+     */
+    @Test
+    public void testIsInView() {
+        assertThat(isInView(NEW_TAB_LINK_CSS)).isTrue();
+    }
+
+    /**
+     * Verifies {@link #isInView(String)} returns false for an element not in view.
+     */
+    @Test
+    public void testIsInViewNegative() {
+        // setup the test page to not be able to see the open new tab link
+        driver.manage().window().setSize(new Dimension(200, 200));
+
+        assertThat(isInView(NEW_TAB_LINK_CSS)).isFalse();
+    }
+
+    /**
+     * Test for {@link #scrollTo(String)}.
+     *
+     * Verifies an out of view element can be scrolled to.
+     */
+    @Test
+    public void testScrollTo() {
+        final WebElement newTabLink = waitForElement(NEW_TAB_LINK_CSS);
+
+        // setup the test page to make scrolling necessary: expect to not see the open new tab link
+        driver.manage().window().setSize(new Dimension(200, 200));
+
+        // scroll to the link
+        scrollTo(NEW_TAB_LINK_CSS);
+
+        // verify the open new tab link is now clickable without throwing an exception.
+        assertThat(isInView(newTabLink)).isTrue();
+    }
+
 }
