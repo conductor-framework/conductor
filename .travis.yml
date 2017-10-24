@@ -1,4 +1,7 @@
 language: java
+group: stable
+dist: trusty
+os: linux
 jdk:
   - oraclejdk8
 cache:
@@ -10,8 +13,8 @@ before_install:
   - "sudo sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
 script:
-  - mvn test -DCONDUCTOR_BROWSER=firefox
+  - mvn test -DCONDUCTOR_BROWSER=chrome
 notifications:
   email: false
 addons:
-  firefox: "56.0"
+  chrome: stable
