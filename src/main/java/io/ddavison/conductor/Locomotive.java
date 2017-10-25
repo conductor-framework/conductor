@@ -282,8 +282,8 @@ public class Locomotive implements Conductor<Locomotive> {
                     by.toString(),
                     configuration.retries()));
         } else {
-            // If an element is found try to move to it.
-            moveToElement(elements.get(0));
+            // If an element is found then scroll to it.
+            scrollTo(elements.get(0));
         }
 
         if (size > 1) {
@@ -372,7 +372,12 @@ public class Locomotive implements Conductor<Locomotive> {
     public Locomotive click(By by) {
         waitForCondition(ExpectedConditions.not(ExpectedConditions.invisibilityOfElementLocated(by)))
                 .waitForCondition(ExpectedConditions.elementToBeClickable(by));
-        waitForElement(by).click();
+        final WebElement element = waitForElement(by);
+
+        // position mouse over element before click.
+        moveToElement(element);
+        element.click();
+
         return this;
     }
 
@@ -404,6 +409,32 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public boolean isChecked(By by) {
         return waitForElement(by).isSelected();
+    }
+
+    public boolean isInView(String css) {
+        return isInView(By.cssSelector(css));
+    }
+
+    public boolean isInView(By by) {
+        return isInView(driver.findElement(by));
+    }
+
+    /**
+     * Returns whether the provided element is in the current view.
+     */
+    public boolean isInView(WebElement element) {
+        return (Boolean) ((JavascriptExecutor) driver).executeScript(
+                "var element = arguments[0],                                " +
+                        "  box = element.getBoundingClientRect(),           " +
+                        "  centerX = box.left + box.width / 2,              " +
+                        "  centerY = box.top + box.height / 2,              " +
+                        "  e = document.elementFromPoint(centerX, centerY); " +
+                        "for (; e; e = e.parentElement) {                   " +
+                        "  if (e === element)                               " +
+                        "    return true;                                   " +
+                        "}                                                  " +
+                        "return false;                                      "
+                , element);
     }
 
     public boolean isPresent(String css) {
@@ -611,6 +642,40 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Locomotive closeWindow() {
         return closeWindow(null);
+    }
+
+    /**
+     * Scroll to a specified element
+     *
+     * @param css Css locator for the element to scroll to
+     * @return This instance for method chaining.
+     */
+    public Locomotive scrollTo(String css) {
+        return scrollTo(By.cssSelector(css));
+    }
+
+    /**
+     * Scroll to a specified element
+     *
+     * @param by Locator for the element to scroll to
+     * @return This instance for method chaining.
+     */
+    public Locomotive scrollTo(By by) {
+        // Find the element to scroll to. Cannot use waitForElement() because it would create an infinite loop.s
+        return scrollTo(driver.findElement(by));
+    }
+
+    /**
+     * Scroll to a specified element
+     *
+     * @param element to scroll to
+     * @return This instance for method chaining.
+     */
+    public Locomotive scrollTo(WebElement element) {
+        // Execute javascript to scroll to the element.
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView()", element);
+
+        return this;
     }
 
     public Locomotive switchToFrame(String idOrName) {
