@@ -11,23 +11,23 @@ Using maven, include it as a dependency:
 <dependency>
   <groupId>io.ddavison</groupId>
   <artifactId>conductor</artifactId>
-  <version>3.0.1</version>
+  <version>3.0.2</version>
 </dependency>
 ```
 
 Create a Java Class, and extend it from `io.ddavison.conductor.Locomotive`
 
 ### Drivers
-Drivers should be put in the root of your project, and be named like this:
+Drivers should be put in the resources folder of your project in a subdirectory called drivers, and be named like this:
 
 #### Mac
-chromedriver.mac
+chromedriver-mac-32bit
 
 #### Windows
-chromedriver.exe
+chromedriver-windows-32bit.exe
 
 #### Linux
-chromedriver.linux
+chromedriver-linux-32bit
 
 So as an example, your project structure could be:
 ```
@@ -36,10 +36,12 @@ Project
 |   main
 |     java
 |       TestClass.java
+|     resources
+|       drivers
+|         chromedriver-mac-32bit
+|         chromedriver-windows-32bit.exe
+|         chromedriver-linux-32bit
 | pom.xml
-| chromedriver.mac
-| chromedriver.exe
-| chromedriver.linux
 ```
 
 Currently, six browsers are supported and they are Firefox, HTMLUnit, Chrome, Internet Explorer, Safari, and PhantomJS
