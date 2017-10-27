@@ -244,15 +244,6 @@ public class Locomotive implements Conductor<Locomotive> {
         return tempFile.getAbsolutePath();
     }
 
-    static public String findFile(String filename) {
-        String paths[] = {"", "bin/", "target/classes"}; // if you have chromedriver somewhere else on the path, then put it here.
-        for (String path : paths) {
-            if (new File(path + filename).exists())
-                return path + filename;
-        }
-        return "";
-    }
-
     @After
     public void teardown() {
         driver.quit();
