@@ -14,6 +14,7 @@ import io.ddavison.conductor.util.JvmUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -40,6 +41,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
+
+enum Platform {
+    LINUX,
+    WINDOWS,
+    MAC
+}
 
 /**
  * the base test that includes all Selenium 2 functionality that you will need
@@ -79,10 +86,31 @@ public class Locomotive implements Conductor<Locomotive> {
     public Locomotive() {
         final Properties props = new Properties();
         try {
+            System.out.println("CLASS: " + getClass());
             props.load(getClass().getResourceAsStream("/default.properties"));
         } catch (IOException e) {
             logFatal("Couldn't load in default properties");
         } catch (Exception e) {}
+
+        try {
+            // Set the webdriver env vars.
+            if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("mac")) {
+                System.setProperty("webdriver.chrome.driver", extractChromeDriver(Platform.MAC));
+            } else if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("nix") ||
+                    JvmUtil.getJvmProperty("os.name").toLowerCase().contains("nux") ||
+                    JvmUtil.getJvmProperty("os.name").toLowerCase().contains("aix")
+            ) {
+                System.setProperty("webdriver.chrome.driver", extractChromeDriver(Platform.LINUX));
+            } else if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("win")) {
+                System.setProperty("webdriver.chrome.driver", extractChromeDriver(Platform.WINDOWS));
+                System.setProperty("webdriver.ie.driver", extractIEDriver(Platform.WINDOWS));
+            } else {
+
+            }
+        } catch (Exception e) {
+            logFatal("Could not load webdriver");
+            e.printStackTrace();
+        }
 
         /**
          * Order of overrides:
@@ -188,21 +216,35 @@ public class Locomotive implements Conductor<Locomotive> {
         if (StringUtils.isNotEmpty(baseUrl)) driver.navigate().to(baseUrl);
     }
 
-    static {
-        // Set the webdriver env vars.
-        if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("mac")) {
-            System.setProperty("webdriver.chrome.driver", findFile("chromedriver.mac"));
-        } else if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("nix") ||
-                   JvmUtil.getJvmProperty("os.name").toLowerCase().contains("nux") ||
-                   JvmUtil.getJvmProperty("os.name").toLowerCase().contains("aix")
-        ) {
-            System.setProperty("webdriver.chrome.driver", findFile("chromedriver.linux"));
-        } else if (JvmUtil.getJvmProperty("os.name").toLowerCase().contains("win")) {
-            System.setProperty("webdriver.chrome.driver", findFile("chromedriver.exe"));
-            System.setProperty("webdriver.ie.driver", findFile("iedriver.exe"));
-        } else {
+    private String extractChromeDriver(Platform platform) throws IOException, RuntimeException {
+        return extractDriver(platform, "chrome");
+    }
 
+    private String extractIEDriver(Platform platform) throws IOException, RuntimeException {
+        return extractDriver(platform, "ie");
+    }
+
+    private String extractDriver(Platform platform, String browser) throws IOException, RuntimeException {
+        URL rsrcDriver;
+        if (platform == Platform.LINUX) {
+            rsrcDriver = getClass().getResource("/drivers/" + browser + "driver-linux-32bit");
+        } else if (platform == Platform.MAC) {
+            rsrcDriver = getClass().getResource("/drivers/" + browser + "driver-mac-32bit");
+        } else if (platform == Platform.WINDOWS) {
+            rsrcDriver = getClass().getResource("/drivers/" + browser + "driver-windows-32bit.exe");
+        } else {
+            throw new RuntimeException("Unknown platform");
         }
+
+        File tempFile = File.createTempFile("conductor-" + browser + "driver-", "");
+        tempFile.deleteOnExit();
+
+        FileUtils.copyURLToFile(rsrcDriver, tempFile);
+        tempFile.setExecutable(true);
+
+        System.out.println(tempFile.getAbsolutePath());
+
+        return tempFile.getAbsolutePath();
     }
 
     static public String findFile(String filename) {

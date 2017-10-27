@@ -6,7 +6,7 @@
 
   <name>conductor</name>
   <url>http://github.com/conductor-framework/conductor</url>
-  <version>3.0.1</version>
+  <version>3.0.2</version>
   <description>A quick and easy start-up browser automation framework based on Selenium WebDriver</description>
 
   <parent>
