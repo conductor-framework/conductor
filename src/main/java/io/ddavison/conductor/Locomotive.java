@@ -86,7 +86,6 @@ public class Locomotive implements Conductor<Locomotive> {
     public Locomotive() {
         final Properties props = new Properties();
         try {
-            System.out.println("CLASS: " + getClass());
             props.load(getClass().getResourceAsStream("/default.properties"));
         } catch (IOException e) {
             logFatal("Couldn't load in default properties");
@@ -241,8 +240,6 @@ public class Locomotive implements Conductor<Locomotive> {
 
         FileUtils.copyURLToFile(rsrcDriver, tempFile);
         tempFile.setExecutable(true);
-
-        System.out.println(tempFile.getAbsolutePath());
 
         return tempFile.getAbsolutePath();
     }
