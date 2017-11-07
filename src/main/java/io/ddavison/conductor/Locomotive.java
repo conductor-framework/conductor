@@ -223,18 +223,32 @@ public class Locomotive implements Conductor<Locomotive> {
         return extractDriver(platform, "ie");
     }
 
-    private String extractDriver(Platform platform, String browser) throws IOException, RuntimeException {
+    private URL getDriverRsrc(Platform platform, String browser, String bits) throws RuntimeException {
         URL rsrcDriver;
         if (platform == Platform.LINUX) {
-            rsrcDriver = getClass().getResource("/drivers/" + browser + "driver-linux-32bit");
+            rsrcDriver = getClass().getResource("/drivers/" + browser + "driver-linux-" + bits + "bit");
         } else if (platform == Platform.MAC) {
-            rsrcDriver = getClass().getResource("/drivers/" + browser + "driver-mac-32bit");
+            rsrcDriver = getClass().getResource("/drivers/" + browser + "driver-mac-" + bits + "bit");
         } else if (platform == Platform.WINDOWS) {
-            rsrcDriver = getClass().getResource("/drivers/" + browser + "driver-windows-32bit.exe");
+            rsrcDriver = getClass().getResource("/drivers/" + browser + "driver-windows-" + bits + "bit.exe");
         } else {
             throw new RuntimeException("Unknown platform");
         }
 
+        // If searching for system-appropriate version did not work, fall back on 32-bit version
+        if (rsrcDriver == null && !bits.equals("32")) {
+            rsrcDriver = getDriverRsrc(platform, browser, "32");
+        }
+
+        return rsrcDriver;
+    }
+
+    private String extractDriver(Platform platform, String browser) throws IOException, RuntimeException {
+        // Determine system architecture and load an appropriate driver if possible
+        String bits = System.getProperty("os.arch").endsWith("64") ? "64" : "32";
+        URL rsrcDriver = getDriverRsrc(platform, browser, bits);
+
+        // Extract the executable to a temp file
         File tempFile = File.createTempFile("conductor-" + browser + "driver-", "");
         tempFile.deleteOnExit();
 
