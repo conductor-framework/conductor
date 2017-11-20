@@ -1,0 +1,20 @@
+
+currentSchemes:
+  - longer_timeouts
+  - stage-dev
+
+
+defaults:
+  browser: SAFARI
+  baseUrl: https://willowtreeapps.com/
+  timeout: 8
+  retries: 10
+  hub: http://hub.com/wd/kad
+  screenshotsOnFail: true
+
+longer_timeouts:
+  retries: 3
+  timeout: 20
+
+stage-dev:
+  baseUrl: https://wta-stage.herokuapp.com

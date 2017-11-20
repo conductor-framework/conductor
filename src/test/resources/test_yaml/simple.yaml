@@ -1,0 +1,6 @@
+defaults:
+  browser: CHROME
+
+currentSchemes:
+  - test_scheme1
+  - test_scheme2

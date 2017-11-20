@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>Getting Started with Selenium test site.</title>
+    <style type="text/css">
+        html, body {
+        font-size: 11px;
+        font-family: Consolas;
+        }
+
+        .box {
+        height: 50px;
+        width: 50px;
+        border: 1px solid #000;
+        }
+
+        .success {
+        background-color: #0A0;
+        }
+    </style>
+    </head>
+
+  <body>
+    
+    <!-- Click -->
+    <div class="box" id="click">
+      click()
+    </div>
+
+    <!-- Set Text -->
+    <div id="setText">
+      setText(): <input type="text" id="setTextField" value="some text" /><br />
+      setText/getText(): <textarea id="textArea"></textarea>
+    </div>
+
+    <!-- Check / Uncheck -->
+    <div id="checkuncheck">
+      check() / uncheck(): <input type="checkbox" id="checkbox" />
+
+      <form id="radios" onsubmit="return false;">
+        check(): <input type="radio" name="radio" id="radio1" />
+        check(): <input type="radio" name="radio" id="radio2" />
+      </form>
+    </div>
+
+    <!-- Select from dropdown -->
+    <div id="dropdown">
+      selectOptionByText()|selectOptionByValue():
+      <select id="select">
+        <option value="1">First</option>
+        <option value="2">Second</option>
+        <option value="3">Third</option>
+      </select>
+
+      <div id="datalist-container">
+        <input list="browsers" />
+        <datalist id="browsers">
+          <option value="Chrome"></option>
+          <option value="Firefox"></option>
+          <option value="Safari"></option>
+        </datalist>
+      </div>
+    </div>
+
+    <div id="framesandwindows">
+      switchToFrame(): <br /><iframe src="frame.html" id="frame"></iframe><br /><br />
+      switchToWindow()|waitForWindow(): <a target="_blank" href="http://google.com">Open a new tab / window</a>
+    </div>
+
+    <script>
+      const clickSquare = document.querySelector('#click');
+      function addSuccess() {
+          this.classList.add('success');
+      }
+      clickSquare.addEventListener('click', addSuccess);
+    </script>
+  </body>
+</html>

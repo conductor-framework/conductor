@@ -1,0 +1,16 @@
+currentSchemes:
+  - firefox
+
+defaults:
+  browser: CHROME
+  baseUrl: https://willowtreeapps.com
+  timeout: 8
+  retries: 10
+  hub: http://hub.com/wd/lkajsd
+  screenshotsOnFail: true
+  customCapabilities:
+    foo: bar
+    fizz: buzz
+
+firefox:
+  browser: FIREFOX

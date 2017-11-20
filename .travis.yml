@@ -8,12 +8,13 @@ cache:
   directories:
   - $HOME/.m2
 before_install:
-  - mvn install -DskipTests
   - "export DISPLAY=:99.0"
   - "sudo sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
+install:
+  - mvn install -DskipTests
 script:
-  - mvn test -DCONDUCTOR_BROWSER=chrome
+  - mvn test -DconductorCurrentSchemes=chrome
 notifications:
   email: false
 addons:

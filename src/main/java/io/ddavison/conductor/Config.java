@@ -16,11 +16,6 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Config {
-    String url() default "";
     Browser browser() default Browser.NONE;
-    String hub() default "";
-    String baseUrl() default "";
     String path() default "";
-    int timeout() default 5;
-    int retries() default 5;
 }

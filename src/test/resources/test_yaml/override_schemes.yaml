@@ -1,0 +1,25 @@
+currentSchemes:
+  - longer_timeouts
+  - even_longer_timeouts
+
+defaults:
+  timeout: 8
+  retries: 10
+  customCapabilities:
+      foo: bar
+      fizz: buzz
+
+longer_timeouts:
+  retries: 16
+  timeout: 20
+  baseUrl: http://google.com
+  customCapabilities:
+      foo: buzz
+
+even_longer_timeouts:
+  retries: 32
+  timeout: 40
+  browser: EDGE
+  customCapabilities:
+      fizz: blerg
+      boop: boop

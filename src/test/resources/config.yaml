@@ -1,0 +1,6 @@
+defaults:
+  browser: CHROME
+  baseUrl: http://ddavison.io/
+
+chrome:
+  browser: CHROME

@@ -20,9 +20,8 @@ public enum Browser {
     FIREFOX("firefox"),
     INTERNET_EXPLORER("ie"),
     EDGE("edge"),
-    SAFARI("safari"),
-    PHANTOMJS("phantomjs");
-    
+    SAFARI("safari");
+
     String moniker;
     
     Browser(String moniker) {

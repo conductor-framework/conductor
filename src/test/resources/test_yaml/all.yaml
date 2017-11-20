@@ -1,0 +1,33 @@
+currentSchemes:
+  - longer_timeouts
+  - stage
+
+defaults:
+  browser: CHROME
+  baseUrl: https://willowtreeapps.com
+  timeout: 8
+  retries: 10
+  hub: http://hub.com/wd/lkajsd
+  screenshotsOnFail: true
+  customCapabilities:
+    foo: bar
+    fizz: buzz
+
+shorter_timeouts:
+  retries: 8
+  timeout: 5
+
+longer_timeouts:
+  retries: 5
+  timeout: 20
+
+stage:
+  baseUrl: https://wta-stage.herokuapp.com
+  customCapabilities:
+      bar: foo
+
+stage-dev:
+  baseUrl: https://wta-stage.herokuapp.com
+
+firefox:
+  browser: FIREFOX
