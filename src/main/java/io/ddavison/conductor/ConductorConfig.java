@@ -21,6 +21,8 @@ public class ConductorConfig {
     // JVM env args
     static final String CONDUCTOR_CURRENT_SCHEMES = "conductorCurrentSchemes";
     static final String CONDUCTOR_BASE_URL = "conductorBaseUrl";
+    @Deprecated
+    static final String CONDUCTOR_BASE_URL_OLD = "CONDUCTOR_BASE_URL";
 
     // YAML Keys
     private static final String DEFAULTS = "defaults";
@@ -105,7 +107,7 @@ public class ConductorConfig {
         }
 
         // Override base url from env var
-        String baseUrl = System.getProperty(CONDUCTOR_BASE_URL);
+        String baseUrl = System.getProperty(CONDUCTOR_BASE_URL, System.getProperty(CONDUCTOR_BASE_URL_OLD, null));
         if (baseUrl != null) {
             setBaseUrl(baseUrl);
         }

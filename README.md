@@ -42,7 +42,7 @@ The primary goals of this project are to...
 - Utilize the power of CSS!
 
 ## Configuration
-Conductor can be configured using a [yaml](https://en.wikipedia.org/wiki/YAML) file. By default, Conductor looks for a "config.yaml" at the root of embedded resources.
+Conductor can be configured using a [yaml](https://en.wikipedia.org/wiki/YAML) file. By default, Conductor looks for a `config.yaml` at the root of embedded resources.
 
 The file has 3 sections: `current configuration`, `defaults`, and `schemes`.
 
@@ -86,6 +86,36 @@ shorter_timeouts:
   retries: 2
 ```
 You can see a variety of example configuration files in the unit tests for conductor [here](src/test/resources/test_yaml)
+
+## Config Annotation
+Test classes can be annotated with `@Config` to add override the default browser or assign a `path` that will be appended to the default `baseUrl`.
+
+```@java
+@Config(
+    path = "/ideas",
+    browser = Browser.CHROME
+)
+public class IdeasTest extends BaseTest {
+    
+}
+```
+
+## JVM Environment Arguments
+Conductor supports a couple of jvm env args that can be passed in to override some defaults:
+- `conductorCurrentSchemes` to override the default `currentSchemes` 
+- `conductorBaseUrl` to override the default `baseUrl` (including ones specified on **current schemes!**)
+  - This is specifically helpful when dealing with a dynamic url (e.g. Pull Request build with a unique build number).
+
+```
+mvn test -DconductorCurrentSchemes=shorter_timeouts,stage-dev
+```
+```
+mvn test -DconductorBaseUrl=https://wta-stage-dev-pr-759.herokuapp.com
+```
+
+# Methods
+Supported methods can be separated by functionality into Actions, In-line validations, and helper methods for switching between windows and frames (listed below in more detail). 
+- For a full list of the supported APIs see the [Conductor.java](src/main/java/io/ddavison/conductor/Conductor.java) interface.  
 
 ## Actions
 You can perform any action that you could possibly do, using the inline actions.
