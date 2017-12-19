@@ -495,15 +495,18 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     /**
-     * Scroll to a specified element
+     * Scroll to a specified element and attempt to center it in the viewport
+     *
+     * See <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView">MDN web docs Element.scrollIntoView()</a>
      *
      * @param element to scroll to
      * @return This instance for method chaining.
      */
     public Locomotive scrollTo(WebElement element) {
         // Execute javascript to scroll to the element.
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView()", element);
-
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({" +
+                "block: \"center\"" +
+                "})", element);
         return this;
     }
 
