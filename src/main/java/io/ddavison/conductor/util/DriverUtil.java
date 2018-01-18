@@ -1,5 +1,6 @@
-package io.ddavison.conductor;
+package io.ddavison.conductor.util;
 
+import io.ddavison.conductor.ConductorConfig;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.EdgeDriverManager;
 import io.github.bonigarcia.wdm.FirefoxDriverManager;

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Test-method Suite">
+    <test name="Tests that Modify System Environment Variables">
+        <groups>
+            <define name="All">
+                <include name="modifies-env-vars" />
+            </define>
+            <run>
+                <include name="modifies-env-vars" />
+            </run>
+        </groups>
+        <packages>
+            <package name="io.ddavison.conductor"/>
+        </packages>
+    </test>
+    <test name="All Other Tests in Parallel" parallel="methods" thread-count="10">
+        <groups>
+            <define name="All">
+                <include name="modifies-env-vars" />
+            </define>
+            <run>
+                <exclude name="modifies-env-vars" />
+            </run>
+        </groups>
+        <packages>
+            <package name="io.ddavison.conductor"/>
+        </packages>
+    </test>
+</suite>

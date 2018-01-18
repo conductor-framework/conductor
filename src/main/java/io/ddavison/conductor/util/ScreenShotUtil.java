@@ -4,6 +4,7 @@ import io.ddavison.conductor.Locomotive;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
+import org.pmw.tinylog.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,18 +19,20 @@ public class ScreenShotUtil {
     private static final String PNG_EXT = ".png";
 
     public static void take(Locomotive locomotive, String testName) {
-        writeFile((TakesScreenshot) locomotive.driver, createFilePathAndName(testName));
+        writeFile((TakesScreenshot) locomotive.getDriver(), createFilePathAndName(testName));
     }
 
     public static void take(Locomotive locomotive, String path, String testName) {
-        writeFile((TakesScreenshot) locomotive.driver, createFilePathAndName(path, testName));
+        writeFile((TakesScreenshot) locomotive.getDriver(), createFilePathAndName(path, testName));
     }
 
     private static void writeFile(TakesScreenshot takesScreenshot, String filePathAndName) {
-        try {
-            FileUtils.copyFile(takesScreenshot.getScreenshotAs(OutputType.FILE), new File(filePathAndName));
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (takesScreenshot != null && filePathAndName != null) {
+            try {
+                FileUtils.copyFile(takesScreenshot.getScreenshotAs(OutputType.FILE), new File(filePathAndName));
+            } catch (IOException e) {
+                Logger.error(e);
+            }
         }
     }
 
@@ -54,7 +57,7 @@ public class ScreenShotUtil {
     }
 
     private static String removeInvalidFilenameChars(String name) {
-        return name.replace(File.separator, "-")
+        return name == null ? "" : name.replace(File.separator, "-")
                 .replace(":", "-")
                 .replace("?", "-")
                 .replace("*", "-")
