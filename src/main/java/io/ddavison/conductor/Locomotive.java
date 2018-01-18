@@ -1,14 +1,15 @@
 package io.ddavison.conductor;
 
 import com.google.common.base.Strings;
-import io.ddavison.conductor.util.ScreenShotUtil;
+import io.ddavison.conductor.listeners.TestListener;
+import io.ddavison.conductor.listeners.Watchman;
+import io.ddavison.conductor.listeners.WebDriverListener;
+import io.ddavison.conductor.util.DriverUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.swing.assertions.Assertions;
-import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -16,6 +17,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.pmw.tinylog.Logger;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Listeners;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,22 +27,30 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Locomotive implements Conductor<Locomotive> {
+@Listeners({TestListener.class, WebDriverListener.class})
+public class Locomotive extends Watchman implements Conductor<Locomotive> {
+
+    //Declare ThreadLocal Driver (ThreadLocalMap) for ThreadSafe Tests
+    private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
 
     public ConductorConfig configuration;
-    public WebDriver driver;
     private int attempts = 0;
-    public Actions actions;
-    private Map<String, String> vars = new HashMap<String, String>();
+    private Actions actions;
+    private Map<String, String> vars = new HashMap<>();
 
     private Pattern p;
     private Matcher m;
 
     public Locomotive() {
+    }
+
+    @Before
+    @BeforeMethod(alwaysRun = true)
+    public void init() {
         Config testConfiguration = getClass().getAnnotation(Config.class);
 
         configuration = new ConductorConfig(testConfiguration);
-        driver = DriverUtil.getDriver(configuration);
+        driver.set(DriverUtil.getDriver(configuration));
 
         Logger.debug(String.format("\n=== Configuration ===\n" +
                 "\tURL:     %s\n" +
@@ -47,51 +58,33 @@ public class Locomotive implements Conductor<Locomotive> {
                 "\tHub:     %s\n" +
                 "\tBase url: %s\n", configuration.getUrl(), configuration.getBrowser().moniker, configuration.getHub(), configuration.getBaseUrl()));
 
-        actions = new Actions(driver);
+        actions = new Actions(getDriver());
 
         // Automatically start test on url
         if (StringUtils.isNotEmpty(configuration.getUrl())) {
-            driver.navigate().to(configuration.getUrl());
+            getDriver().navigate().to(configuration.getUrl());
         }
     }
 
     @Rule
-    public TestRule watchman = new TestWatcher() {
-        boolean failure;
-        Throwable e;
-        Description description;
+    public TestRule watchman = this;
 
+    public Locomotive getLocomotive() {
+        return this;
+    }
 
-        @Override
-        protected void failed(Throwable e, Description description) {
-            if (configuration.isScreenshotOnFail()) {
-                failure = true;
-                this.e = e;
-                this.description = description;
-            }
-        }
+    public WebDriver getDriver() {
+        return driver.get();
+    }
 
-        /**
-         * Take screenshot if the test failed.
-         */
-        @Override
-        protected void finished(Description description) {
-            super.finished(description);
-            if (configuration.isScreenshotOnFail()) {
-                if (failure) {
-                    ScreenShotUtil.take(Locomotive.this,
-                            description.getDisplayName(),
-                            e.getMessage() != null ? e.getMessage() : e.toString());
-                }
-                Locomotive.this.driver.quit();
-            }
-        }
-    };
-
-    @After
-    public void teardown() {
-        if (!configuration.isScreenshotOnFail()) {
-            driver.quit();
+    /**
+     * The listener classes ({@link Watchman}, {@link TestListener} {@link WebDriverListener}) will call this
+     * method upon test completion.
+     */
+    public void quit() {
+        if (getDriver() != null) {
+            getDriver().quit();
+            driver.remove();
         }
     }
 
@@ -119,7 +112,7 @@ public class Locomotive implements Conductor<Locomotive> {
             Logger.error("WARN: There are more than 1 %s 's!", by.toString());
         }
 
-        return driver.findElement(by);
+        return getDriver().findElement(by);
     }
 
     public List<WebElement> waitForElements(String css) {
@@ -127,7 +120,7 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public List<WebElement> waitForElements(By by) {
-        List<WebElement> elements = driver.findElements(by);
+        List<WebElement> elements = getDriver().findElements(by);
 
         if (elements.size() == 0) {
             int attempts = 1;
@@ -138,7 +131,7 @@ public class Locomotive implements Conductor<Locomotive> {
                     Assertions.fail("Failed due to an exception during Thread.sleep!", e);
                 }
 
-                elements = driver.findElements(by);
+                elements = getDriver().findElements(by);
                 if (elements.size() > 0) {
                     break;
                 }
@@ -158,7 +151,7 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Locomotive moveToElement(WebElement element) {
         try {
-            Actions actions = new Actions(driver);
+            Actions actions = new Actions(getDriver());
             actions.moveToElement(element);
             actions.perform();
         } catch (WebDriverException e) {
@@ -189,7 +182,7 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive waitForCondition(ExpectedCondition<?> condition, long timeOutInSeconds, long sleepInMillis) {
-        WebDriverWait wait = new WebDriverWait(driver, timeOutInSeconds, sleepInMillis);
+        WebDriverWait wait = new WebDriverWait(getDriver(), timeOutInSeconds, sleepInMillis);
         wait.until(condition);
         return this;
     }
@@ -228,7 +221,7 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive hoverOver(By by) {
-        actions.moveToElement(driver.findElement(by)).perform();
+        actions.moveToElement(getDriver().findElement(by)).perform();
         return this;
     }
 
@@ -245,14 +238,14 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public boolean isInView(By by) {
-        return isInView(driver.findElement(by));
+        return isInView(getDriver().findElement(by));
     }
 
     /**
      * Returns whether the provided element is in the current view.
      */
     public boolean isInView(WebElement element) {
-        return (Boolean) ((JavascriptExecutor) driver).executeScript(
+        return (Boolean) ((JavascriptExecutor) getDriver()).executeScript(
                 "var element = arguments[0],                                " +
                         "  box = element.getBoundingClientRect(),           " +
                         "  centerX = box.left + box.width / 2,              " +
@@ -271,7 +264,7 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public boolean isPresent(By by) {
-        return driver.findElements(by).size() > 0;
+        return getDriver().findElements(by).size() > 0;
     }
 
     public String getText(String css) {
@@ -350,21 +343,21 @@ public class Locomotive implements Conductor<Locomotive> {
     /* Window / Frame Switching */
 
     public Locomotive waitForWindow(String regex) {
-        Set<String> windows = driver.getWindowHandles();
+        Set<String> windows = getDriver().getWindowHandles();
 
         for (String window : windows) {
             try {
-                driver.switchTo().window(window);
+                getDriver().switchTo().window(window);
 
                 p = Pattern.compile(regex);
-                m = p.matcher(driver.getCurrentUrl());
+                m = p.matcher(getDriver().getCurrentUrl());
 
                 if (m.find()) {
                     attempts = 0;
                     return switchToWindow(regex);
                 } else {
                     // try for title
-                    m = p.matcher(driver.getTitle());
+                    m = p.matcher(getDriver().getTitle());
 
                     if (m.find()) {
                         attempts = 0;
@@ -405,20 +398,20 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive switchToWindow(String regex) {
-        Set<String> windows = driver.getWindowHandles();
+        Set<String> windows = getDriver().getWindowHandles();
 
         for (String window : windows) {
-            driver.switchTo().window(window);
+            getDriver().switchTo().window(window);
             Logger.info("#switchToWindow() : title=%s ; url=%s",
-                    driver.getTitle(),
-                    driver.getCurrentUrl());
+                    getDriver().getTitle(),
+                    getDriver().getCurrentUrl());
 
             p = Pattern.compile(regex);
-            m = p.matcher(driver.getTitle());
+            m = p.matcher(getDriver().getTitle());
 
             if (m.find()) return this;
             else {
-                m = p.matcher(driver.getCurrentUrl());
+                m = p.matcher(getDriver().getCurrentUrl());
                 if (m.find()) return this;
             }
         }
@@ -429,36 +422,36 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Locomotive closeWindow(String regex) {
         if (regex == null) {
-            driver.close();
+            getDriver().close();
 
-            if (driver.getWindowHandles().size() == 1)
-                driver.switchTo().window(driver.getWindowHandles().iterator().next());
+            if (getDriver().getWindowHandles().size() == 1)
+                getDriver().switchTo().window(getDriver().getWindowHandles().iterator().next());
 
             return this;
         }
 
-        Set<String> windows = driver.getWindowHandles();
+        Set<String> windows = getDriver().getWindowHandles();
 
         for (String window : windows) {
             try {
-                driver.switchTo().window(window);
+                getDriver().switchTo().window(window);
 
                 p = Pattern.compile(regex);
-                m = p.matcher(driver.getTitle());
+                m = p.matcher(getDriver().getTitle());
 
                 if (m.find()) {
                     switchToWindow(regex); // switch to the window, then close it.
-                    driver.close();
+                    getDriver().close();
 
                     if (windows.size() == 2) // just default back to the first window.
-                        driver.switchTo().window(windows.iterator().next());
+                        getDriver().switchTo().window(windows.iterator().next());
                 } else {
-                    m = p.matcher(driver.getCurrentUrl());
+                    m = p.matcher(getDriver().getCurrentUrl());
                     if (m.find()) {
                         switchToWindow(regex);
-                        driver.close();
+                        getDriver().close();
 
-                        if (windows.size() == 2) driver.switchTo().window(windows.iterator().next());
+                        if (windows.size() == 2) getDriver().switchTo().window(windows.iterator().next());
                     }
                 }
 
@@ -491,12 +484,12 @@ public class Locomotive implements Conductor<Locomotive> {
      */
     public Locomotive scrollTo(By by) {
         // Find the element to scroll to. Cannot use waitForElement() because it would create an infinite loop.s
-        return scrollTo(driver.findElement(by));
+        return scrollTo(getDriver().findElement(by));
     }
 
     /**
      * Scroll to a specified element and attempt to center it in the viewport
-     *
+     * <p>
      * See <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView">MDN web docs Element.scrollIntoView()</a>
      *
      * @param element to scroll to
@@ -504,7 +497,7 @@ public class Locomotive implements Conductor<Locomotive> {
      */
     public Locomotive scrollTo(WebElement element) {
         // Execute javascript to scroll to the element.
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({" +
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView({" +
                 "block: \"center\"" +
                 "})", element);
         return this;
@@ -512,7 +505,7 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Locomotive switchToFrame(String idOrName) {
         try {
-            driver.switchTo().frame(idOrName);
+            getDriver().switchTo().frame(idOrName);
         } catch (Exception x) {
             Assertions.fail("Couldn't switch to frame with id or name [" + idOrName + "]");
         }
@@ -521,7 +514,7 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Locomotive switchToFrame(WebElement webElement) {
         try {
-            driver.switchTo().frame(webElement);
+            getDriver().switchTo().frame(webElement);
         } catch (Exception x) {
             Assertions.fail("Couldn't switch to frame with WebElement [" + webElement + "]");
         }
@@ -530,7 +523,7 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Locomotive switchToFrame(int index) {
         try {
-            driver.switchTo().frame(index);
+            getDriver().switchTo().frame(index);
         } catch (Exception x) {
             Assertions.fail("Couldn't switch to frame with an index of [" + index + "]");
         }
@@ -538,7 +531,7 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive switchToDefaultContent() {
-        driver.switchTo().defaultContent();
+        getDriver().switchTo().defaultContent();
         return this;
     }
 
@@ -609,12 +602,12 @@ public class Locomotive implements Conductor<Locomotive> {
     }
 
     public Locomotive validateTextPresent(String text) {
-        Assertions.assertThat(driver.getPageSource()).contains(text);
+        Assertions.assertThat(getDriver().getPageSource()).contains(text);
         return this;
     }
 
     public Locomotive validateTextNotPresent(String text) {
-        Assertions.assertThat(driver.getPageSource()).doesNotContain(text);
+        Assertions.assertThat(getDriver().getPageSource()).doesNotContain(text);
         return this;
     }
 
@@ -676,12 +669,12 @@ public class Locomotive implements Conductor<Locomotive> {
 
     public Locomotive validateUrl(String regex) {
         p = Pattern.compile(regex);
-        m = p.matcher(driver.getCurrentUrl());
+        m = p.matcher(getDriver().getCurrentUrl());
 
         Assertions.assertThat(m.find())
                 .withFailMessage("Url does not match regex [%s] (actual is: \"%s\")",
                         regex,
-                        driver.getCurrentUrl())
+                        getDriver().getCurrentUrl())
                 .isTrue();
         return this;
     }
@@ -699,23 +692,23 @@ public class Locomotive implements Conductor<Locomotive> {
     /* ================================ */
 
     public Locomotive goBack() {
-        driver.navigate().back();
+        getDriver().navigate().back();
         return this;
     }
 
     public Locomotive refresh() {
-        driver.navigate().refresh();
+        getDriver().navigate().refresh();
         return this;
     }
 
     public Locomotive navigateTo(String url) {
         // absolute url
         if (url.contains("://")) {
-            driver.navigate().to(url);
+            getDriver().navigate().to(url);
         } else if (url.startsWith("/")) {
-            driver.navigate().to(configuration.getBaseUrl().concat(url));
+            getDriver().navigate().to(configuration.getBaseUrl().concat(url));
         } else {
-            driver.navigate().to(driver.getCurrentUrl().concat(url));
+            getDriver().navigate().to(getDriver().getCurrentUrl().concat(url));
         }
 
         return this;

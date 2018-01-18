@@ -1,11 +1,11 @@
 package io.ddavison.conductor;
 
-import org.junit.Before;
+import org.testng.annotations.BeforeMethod;
 
 @Config(browser = Browser.CHROME)
 public class SuperClassTest extends Locomotive {
 
-    @Before
+    @BeforeMethod
     public void navigateToLocalHtml() {
         navigateTo(FrameworkTest.TEST_HTML_FILE);
     }
