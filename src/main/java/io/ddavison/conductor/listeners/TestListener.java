@@ -34,12 +34,16 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onTestSkipped(ITestResult iTestResult) {
-
+        if (driver != null) {
+            driver.quit();
+        }
     }
 
     @Override
     public void onTestFailedButWithinSuccessPercentage(ITestResult iTestResult) {
-
+        if (driver != null) {
+            driver.quit();
+        }
     }
 
     @Override
