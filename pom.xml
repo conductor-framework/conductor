@@ -6,7 +6,7 @@
 
   <name>conductor</name>
   <url>http://github.com/conductor-framework/conductor</url>
-  <version>3.4.0.1</version>
+  <version>3.7.1.1</version>
   <description>A quick and easy start-up browser automation framework based on Selenium WebDriver</description>
 
   <parent>
@@ -80,7 +80,7 @@
   </scm>
 
   <properties>
-    <selenium_version>3.4.0</selenium_version>
+    <selenium_version>3.7.1</selenium_version>
     <phantomjs_version>1.4.3</phantomjs_version>
   </properties>
 
@@ -94,6 +94,11 @@
       <groupId>com.codeborne</groupId>
       <artifactId>phantomjsdriver</artifactId>
       <version>${phantomjs_version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-api</artifactId>
+      <version>${selenium_version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
@@ -159,7 +164,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>21.0</version>
+        <version>23.6-jre</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
