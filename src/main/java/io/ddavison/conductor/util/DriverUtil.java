@@ -16,6 +16,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
@@ -24,6 +25,10 @@ import org.pmw.tinylog.Logger;
 public class DriverUtil {
 
     public static WebDriver getDriver(ConductorConfig config) {
+        return getDriver(config, null);
+    }
+
+    public static WebDriver getDriver(ConductorConfig config, DesiredCapabilities desiredCapabilities) {
         WebDriver driver = null;
         Capabilities capabilities;
 
@@ -32,7 +37,7 @@ public class DriverUtil {
             switch (config.getBrowser()) {
                 case CHROME:
                     ChromeOptions chromeOptions = new ChromeOptions();
-                    setCustomCapabilities(config, chromeOptions);
+                    setCustomCapabilities(config, chromeOptions, desiredCapabilities);
                     capabilities = chromeOptions;
 
                     if (isLocal) {
@@ -42,7 +47,7 @@ public class DriverUtil {
                     break;
                 case FIREFOX:
                     FirefoxOptions firefoxOptions = new FirefoxOptions();
-                    setCustomCapabilities(config, firefoxOptions);
+                    setCustomCapabilities(config, firefoxOptions, desiredCapabilities);
                     capabilities = firefoxOptions;
 
                     if (isLocal) {
@@ -52,7 +57,7 @@ public class DriverUtil {
                     break;
                 case INTERNET_EXPLORER:
                     InternetExplorerOptions internetExplorerOptions = new InternetExplorerOptions();
-                    setCustomCapabilities(config, internetExplorerOptions);
+                    setCustomCapabilities(config, internetExplorerOptions, desiredCapabilities);
                     capabilities = internetExplorerOptions;
 
                     if (isLocal) {
@@ -62,7 +67,7 @@ public class DriverUtil {
                     break;
                 case EDGE:
                     EdgeOptions edgeOptions = new EdgeOptions();
-                    setCustomCapabilities(config, edgeOptions);
+                    setCustomCapabilities(config, edgeOptions, desiredCapabilities);
                     capabilities = edgeOptions;
 
                     if (isLocal) {
@@ -72,8 +77,8 @@ public class DriverUtil {
                     break;
                 case SAFARI:
                     SafariOptions safariOptions = new SafariOptions();
-                    setCustomCapabilities(config, safariOptions);
-                    capabilities = safariOptions;
+
+                    capabilities = setCustomCapabilities(config, safariOptions, desiredCapabilities);
 
                     if (isLocal) {
                         driver = new SafariDriver(safariOptions);
@@ -98,12 +103,22 @@ public class DriverUtil {
         return driver;
     }
 
-    public static void setCustomCapabilities(ConductorConfig config, MutableCapabilities capabilities) {
+    public static MutableCapabilities setCustomCapabilities(ConductorConfig config, MutableCapabilities capabilities, DesiredCapabilities customDesiredCapabilities) {
+        MutableCapabilities newCapabilities = new MutableCapabilities(capabilities);
+
         if (!config.getCustomCapabilities().isEmpty()) {
             for (String key : config.getCustomCapabilities().keySet()) {
-                capabilities.setCapability(key, config.getCustomCapabilities().get(key));
+                newCapabilities.setCapability(key, config.getCustomCapabilities().get(key));
             }
         }
+
+        if (customDesiredCapabilities != null) {
+            for (String key : customDesiredCapabilities.asMap().keySet()) {
+                newCapabilities.setCapability(key, config.getCustomCapabilities().get(key));
+            }
+        }
+
+        return newCapabilities;
     }
 
 }
