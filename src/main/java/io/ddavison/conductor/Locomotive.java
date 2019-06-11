@@ -18,9 +18,9 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
@@ -138,8 +138,10 @@ public class Locomotive implements Conductor<Locomotive> {
         switch (configuration.browser()) {
             case CHROME:
                 capabilities = DesiredCapabilities.chrome();
+
+                ChromeOptions options = getChromeOptions(configuration);
                 if (isLocal) try {
-                    driver = new ChromeDriver(capabilities);
+                    driver = new ChromeDriver(options);
                 } catch (Exception x) {
                     logFatal("Also see https://github.com/conductor-framework/conductor/wiki/WebDriver-Executables");
                     System.exit(1);
@@ -213,6 +215,21 @@ public class Locomotive implements Conductor<Locomotive> {
         actions = new Actions(driver);
 
         if (StringUtils.isNotEmpty(baseUrl)) driver.navigate().to(baseUrl);
+    }
+
+    private ChromeOptions getChromeOptions(Config locoConfig) {
+       ChromeOptions options = new ChromeOptions();
+        if (StringUtils.isNotEmpty(locoConfig.options())) {
+            String[] splitOptions = locoConfig.options().split("\\s+");
+            List<String> lstOptions = new ArrayList<>();
+            for (String opt : splitOptions) {
+                lstOptions.add(opt);
+            }
+            lstOptions.add(locoConfig.options());
+            options.addArguments(lstOptions);
+        }
+
+        return options;
     }
 
     private String extractChromeDriver(Platform platform) throws IOException, RuntimeException {
