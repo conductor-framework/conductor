@@ -105,6 +105,21 @@ public class LocomotiveConfig implements Config {
     }
 
     @Override
+    public String options() {
+        String opts = "";
+        if (!StringUtils.isEmpty(properties.getProperty(Constants.DEFAULT_OPTIONS))) {
+            opts = properties.getProperty(Constants.DEFAULT_OPTIONS);
+        }
+        if (testConfig != null && (!StringUtils.isEmpty(testConfig.options()))) {
+            opts = testConfig.options();
+        }
+        if (!StringUtils.isEmpty(JvmUtil.getJvmProperty(Constants.JVM_CONDUCTOR_OPTIONS))) {
+            opts = JvmUtil.getJvmProperty(Constants.JVM_CONDUCTOR_OPTIONS);
+        }
+        return opts;
+    }
+
+    @Override
     public Class<? extends Annotation> annotationType() {
         return null;
     }
